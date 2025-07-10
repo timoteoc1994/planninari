@@ -3,6 +3,7 @@
 use App\Http\Controllers\Etapa3Controller;
 use App\Http\Controllers\Etapa4Controller;
 use App\Http\Controllers\Etapa5Controller;
+use App\Http\Controllers\Etapa6Controller;
 use App\Http\Controllers\Etapas;
 use App\Http\Controllers\IntegrantesController;
 use Illuminate\Foundation\Application;
@@ -74,6 +75,10 @@ Route::middleware([
     Route::get('/etapa5/{proyecto}',  [Etapa5Controller::class, 'index'])->name('etapa5');
     Route::post('/etapa5',            [Etapa5Controller::class, 'store'])->name('etapa5.store');
     Route::put('/etapa5/{etapa5}',    [Etapa5Controller::class, 'update'])->name('etapa5.update');
+
+    Route::get('/etapa6/{proyecto}',    [Etapa6Controller::class, 'index'])->name('etapa6');
+    Route::post('/etapa6',              [Etapa6Controller::class, 'store'])->name('etapa6.store');
+    Route::put('/etapa6/{etapa6}',      [Etapa6Controller::class, 'update'])->name('etapa6.update');
 
     
     Route::get('/etapa6/{id}', [Etapas::class, 'etapa6'])->name('etapa6');
