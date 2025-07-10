@@ -41,7 +41,7 @@ function submit() {
                 <form @submit.prevent="submit">
                     <div class="mb-4">
                         <label for="relacion_clientes" class="block mb-1 font-semibold">Relación con los clientes</label>
-                        <textarea id="relacion_clientes" v-model="form.relacion_clientes" rows="8" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        <textarea id="relacion_cientes" v-model="form.relacion_clientes" rows="8" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
                     </div>
                     <div class="flex justify-end">
                         <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Guardar</button>
