@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Etapa3Controller;
 use App\Http\Controllers\Etapa4Controller;
+use App\Http\Controllers\Etapa5Controller;
 use App\Http\Controllers\Etapas;
 use App\Http\Controllers\IntegrantesController;
 use Illuminate\Foundation\Application;
@@ -70,7 +71,11 @@ Route::middleware([
     Route::post('/relacionclientes', [Etapa4Controller::class, 'relacionclientesstore'])->name('relacionclientes.store');
     Route::post('/relacionclientes/{id}', [Etapa4Controller::class, 'relacionclientesupdate'])->name('relacionclientes.update');
 
-    Route::get('/etapa5/{id}', [Etapas::class, 'etapa5'])->name('etapa5');
+    Route::get('/etapa5/{proyecto}',  [Etapa5Controller::class, 'index'])->name('etapa5');
+    Route::post('/etapa5',            [Etapa5Controller::class, 'store'])->name('etapa5.store');
+    Route::put('/etapa5/{etapa5}',    [Etapa5Controller::class, 'update'])->name('etapa5.update');
+
+    
     Route::get('/etapa6/{id}', [Etapas::class, 'etapa6'])->name('etapa6');
     Route::get('/etapa7/{id}', [Etapas::class, 'etapa7'])->name('etapa7');
     Route::get('/etapa8/{id}', [Etapas::class, 'etapa8'])->name('etapa8');
