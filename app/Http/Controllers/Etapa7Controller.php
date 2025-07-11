@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Etapa7;
 use App\Models\RecursosClave;
-use App\Models\RecursoDisponible;
-use App\Models\RecursoNecesario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -24,12 +22,12 @@ class Etapa7Controller extends Controller
         ]);
 
         // Traemos todas las inversiones de este proyecto y usuario
-        $inversiones = Etapa7::with('recurso')
+        // incluyendo ambas relaciones de recurso
+        $inversiones = Etapa7::with(['recursoDisponible', 'recursoNecesario'])
             ->where('proyecto_id', $proyecto_id)
             ->where('user_id', $user->id)
             ->get();
 
-        // Renderizamos el Vue que está en resources/js/Pages/Etapa7.vue
         return Inertia::render('Etapa7', [
             'proyecto_id' => $proyecto_id,
             'disponibles' => $clave->disponibles,
@@ -53,6 +51,7 @@ class Etapa7Controller extends Controller
 
         $data = $r->all();
         $data['user_id'] = Auth::id();
+
         Etapa7::create($data);
 
         return back()->with('success', 'Inversión guardada');
