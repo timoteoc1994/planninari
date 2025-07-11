@@ -4,6 +4,7 @@ use App\Http\Controllers\Etapa3Controller;
 use App\Http\Controllers\Etapa4Controller;
 use App\Http\Controllers\Etapa5Controller;
 use App\Http\Controllers\Etapa6Controller;
+use App\Http\Controllers\Etapa7Controller;
 use App\Http\Controllers\Etapas;
 use App\Http\Controllers\IntegrantesController;
 use Illuminate\Foundation\Application;
@@ -91,6 +92,16 @@ Route::put('/recursos-necesarios/{id}', [Etapa4Controller::class,'necesariosUpda
 Route::delete('/recursos-necesarios/{id}', [Etapa4Controller::class,'necesariosDelete'])
      ->name('recursos.necesarios.destroy');
 
+
+    Route::get('/etapa7/{id}', [Etapa7Controller::class, 'inversiones'])
+         ->name('etapa7.index');
+    Route::post  ('/etapa7/inversiones',       [Etapa7Controller::class, 'inversionesStore'])
+         ->name('etapa7.inversiones.store');
+    Route::put   ('/etapa7/inversiones/{id}',  [Etapa7Controller::class, 'inversionesUpdate'])
+         ->name('etapa7.inversiones.update');
+    Route::delete('/etapa7/inversiones/{id}',  [Etapa7Controller::class, 'inversionesDelete'])
+         ->name('etapa7.inversiones.destroy');
+
     //rutas para segmento de clientes
     Route::get('/segmentoclientes/{id}', [Etapa4Controller::class, 'segmentoclientes'])->name('index.segmentoclientes');
     Route::post('/segmentoclientes', [Etapa4Controller::class, 'segmentoclientesstore'])->name('segmentoclientes.store');
@@ -111,7 +122,6 @@ Route::delete('/recursos-necesarios/{id}', [Etapa4Controller::class,'necesariosD
 
     
     Route::get('/etapa6/{id}', [Etapas::class, 'etapa6'])->name('etapa6');
-    Route::get('/etapa7/{id}', [Etapas::class, 'etapa7'])->name('etapa7');
     Route::get('/etapa8/{id}', [Etapas::class, 'etapa8'])->name('etapa8');
     Route::get('/etapa9/{id}', [Etapas::class, 'etapa9'])->name('etapa9');
     Route::get('/etapa10/{id}', [Etapas::class, 'etapa10'])->name('etapa10');
