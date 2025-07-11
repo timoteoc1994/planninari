@@ -1,7 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { ref } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { router, Link } from '@inertiajs/vue3';
 
 const props = defineProps({
     projects: Array,
@@ -137,6 +137,10 @@ const formatDate = (dateString) => {
                                     >
                                         🗑️ Eliminar
                                     </button>
+
+                                    <Link :href="route('projects.stages.show', project.id)" class="text-blue-600 hover:text-blue-800 text-sm bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded">
+                                        Detalles
+                                    </Link>
 
                                 </div>
                             </div>
