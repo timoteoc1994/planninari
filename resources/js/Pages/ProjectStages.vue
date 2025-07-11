@@ -39,7 +39,7 @@ const stages = ref([]);
                     <a :href="route('etapa6', { id: project.id })" class="block border rounded p-4">
                         <h3 class="font-bold mb-2">Etapa 6</h3>
                     </a>
-                    <a :href="route('etapa7', { id: project.id })" class="block border rounded p-4">
+                    <a :href="route('etapa7.index', project.id)" class="block border rounded p-4">
                         <h3 class="font-bold mb-2">Etapa 7</h3>
                     </a>
                     <a :href="route('etapa8', { id: project.id })" class="block border rounded p-4">
@@ -51,7 +51,7 @@ const stages = ref([]);
                     <a :href="route('etapa10', { id: project.id })" class="block border rounded p-4">
                         <h3 class="font-bold mb-2">Etapa 10</h3>
                     </a>
-                    
+
                 </div>
             </div>
         </div>

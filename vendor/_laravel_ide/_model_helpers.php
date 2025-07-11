@@ -1885,7 +1885,9 @@ namespace App\Models {
      * @property int $user_id
      * @property int $proyecto_id
      * @property int $id
-     * @property-read \App\Models\RecursoNecesario $recurso
+     * @property-read mixed $recurso
+     * @property-read \App\Models\RecursoDisponible $recursoDisponible
+     * @property-read \App\Models\RecursoNecesario $recursoNecesario
      * @method static \Illuminate\Database\Eloquent\Builder<Etapa7>|Etapa7 whereId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Etapa7>|Etapa7 whereProyectoId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Etapa7>|Etapa7 whereUserId($value)

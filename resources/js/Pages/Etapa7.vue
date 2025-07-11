@@ -11,6 +11,8 @@ const props = defineProps({
   inversiones: Array,
 })
 
+console.log('📦 Props iniciales:', props)
+
 // Estado modal y edición
 const showModal = ref(false)
 const editId    = ref(null)
@@ -26,12 +28,16 @@ const inversionForm = useForm({
   vida_util:       '',
 })
 
+console.log('🧾 Form inicial:', inversionForm)
+
 // Obtener IDs de recursos ya utilizados (excluyendo el que se está editando)
 const recursosUtilizados = computed(() => {
-  return props.inversiones
+  const usados = props.inversiones
     .filter(inv => editId.value === null || inv.id !== editId.value)
-    .filter(inv => inv.recurso_id) // Solo considerar inversiones con recurso_id válido
+    .filter(inv => inv.recurso_id)
     .map(inv => inv.recurso_id)
+  console.log('🔎 Recursos ya utilizados:', usados)
+  return usados
 })
 
 // Opciones de recursos según origen, filtradas por recursos no utilizados
@@ -39,13 +45,14 @@ const recursoOptions = computed(() => {
   const recursos = inversionForm.tipo_origen === 'disponible'
     ? props.disponibles
     : props.necesarios
-  
-  // Filtrar recursos que no estén ya utilizados
-  return recursos.filter(recurso => !recursosUtilizados.value.includes(recurso.id))
+  const filtrados = recursos.filter(recurso => !recursosUtilizados.value.includes(recurso.id))
+  console.log(`📋 Recursos ${inversionForm.tipo_origen}:`, filtrados)
+  return filtrados
 })
 
 // Abrir modal para nueva inversión
 function openNew() {
+  console.log('🟢 Abrir NUEVA inversión')
   editId.value = null
   inversionForm.reset()
   inversionForm.tipo_origen = 'disponible'
@@ -54,6 +61,7 @@ function openNew() {
 
 // Cargar datos al editar
 function openEdit(item) {
+  console.log('✏️ Editar inversión:', item)
   editId.value = item.id
   inversionForm.tipo_origen     = item.tipo_origen
   inversionForm.recurso_id      = item.recurso_id
@@ -71,19 +79,27 @@ function submit() {
     ? route('etapa7.inversiones.update', editId.value)
     : route('etapa7.inversiones.store')
 
+  console.log('📤 Enviando inversión (form):', inversionForm.data())
+  console.log('🔗 Método:', method.toUpperCase(), '| URL:', url)
+
   inversionForm[method](url, {
     onSuccess: () => {
+      console.log('✅ Éxito al guardar inversión.')
       showModal.value = false
       inversionForm.reset()
+
       Swal.fire({
         icon: 'success',
         title: editId.value ? 'Inversión actualizada correctamente' : 'Inversión registrada correctamente',
         showConfirmButton: false,
         timer: 2000,
         timerProgressBar: true
+      }).then(() => {
+        window.location.reload() // ⚠️ Esta recarga hace que pierdas datos dinámicos, es intencional en este caso
       })
     },
-    onError: () => {
+    onError: (errors) => {
+      console.error('❌ Error al guardar inversión:', errors)
       Swal.fire({
         icon: 'error',
         title: 'Ocurrió un problema al guardar la inversión.',
@@ -109,8 +125,10 @@ async function remove(id) {
   })
 
   if (result.isConfirmed) {
+    console.log('🗑 Eliminando inversión ID:', id)
     inversionForm.delete(route('etapa7.inversiones.destroy', id), {
       onSuccess: () => {
+        console.log('✅ Inversión eliminada')
         Swal.fire({
           icon: 'success',
           title: 'Inversión eliminada correctamente',
@@ -119,7 +137,8 @@ async function remove(id) {
           timerProgressBar: true
         })
       },
-      onError: () => {
+      onError: (e) => {
+        console.error('❌ Error al eliminar:', e)
         Swal.fire({
           icon: 'error',
           title: 'No se pudo eliminar la inversión.',
@@ -132,15 +151,19 @@ async function remove(id) {
   }
 }
 
-const inversionesDisponibles = computed(() =>
-  props.inversiones.filter(inv => inv.tipo_origen === 'disponible')
-)
+const inversionesDisponibles = computed(() => {
+  const disponibles = props.inversiones.filter(inv => inv.tipo_origen === 'disponible')
+  console.log('📗 Inversiones disponibles:', disponibles)
+  return disponibles
+})
 
-const inversionesNecesarias = computed(() =>
-  props.inversiones.filter(inv => inv.tipo_origen === 'necesario')
-)
-
+const inversionesNecesarias = computed(() => {
+  const necesarias = props.inversiones.filter(inv => inv.tipo_origen === 'necesario')
+  console.log('📘 Inversiones necesarias:', necesarias)
+  return necesarias
+})
 </script>
+
 
 <template>
   <AppLayout title="Detalle de Inversión">
