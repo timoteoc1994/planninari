@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('canales', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('proyecto_id');
+            $table->foreignId('proyecto_id')->constrained('projects')->onDelete('cascade');
             $table->string('canalescomunicacion');
             $table->string('canalesdistribucion')->nullable();
             $table->string('facebook')->nullable();

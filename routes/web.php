@@ -24,13 +24,13 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+
     
+    Route::get('/dashboard', [ProjectStageController::class, 'index'])->name('dashboard');
     // Rutas para proyectos
-    Route::resource('projects', ProjectController::class);
-    Route::get('/projects/{project}', [ProjectStageController::class, 'show'])->name('projects.stages.show');
+    Route::post('projects', [ProjectStageController::class,'projectsstore'])->name('projects.store');
+    Route::post('/projects/{id}', [ProjectStageController::class, 'projectsupdate'])->name('projects.update');
+    Route::delete('/projects/{id}', [ProjectStageController::class, 'projectsdestroy'])->name('projects.destroy');
 
     Route::get('/etapa1/{id}', [Etapas::class, 'etapa1'])->name('etapa1');
     Route::post('/etapa1/{proyecto_id}', [Etapas::class, 'storeOrUpdate'])->name('etapa1.storeOrUpdate');

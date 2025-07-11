@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('integrantes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-           $table->unsignedBigInteger('proyecto_id');
+           $table->foreignId('proyecto_id')->constrained('projects')->onDelete('cascade');
             $table->string('nombre');
             $table->string('apellido'); 
             $table->string('nacionalidad')->nullable();

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('etapa1s', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('proyecto_id');
+            $table->foreignId('proyecto_id')->constrained('projects')->onDelete('cascade');
             $table->string('nombre_emprendimiento')->nullable();
             $table->string('nacionalidad_emprendedor')->nullable();
             $table->string('pais_emprendedor')->nullable();
