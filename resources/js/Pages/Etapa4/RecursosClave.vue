@@ -2,6 +2,7 @@
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
+import Swal from 'sweetalert2'
 
 const props = defineProps({
   proyecto_id: Number,
@@ -76,13 +77,31 @@ function submitDisponible() {
   const url = editDispId.value
     ? route('recursos.disponibles.update', editDispId.value)
     : route('recursos.disponibles.store')
+
   disponibleForm[method](url, {
     onSuccess: () => {
       showModalDisp.value = false
       disponibleForm.reset()
+      Swal.fire({
+        icon: 'success',
+        title: editDispId.value ? 'Recurso disponible actualizado' : 'Recurso disponible registrado',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true
+      })
     },
+    onError: () => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al guardar recurso disponible',
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true
+      })
+    }
   })
 }
+
 
 function deleteDisponible(id) {
   if (confirm('¿Eliminar recurso disponible?')) {
@@ -115,19 +134,68 @@ function submitNecesario() {
   const url = editNecId.value
     ? route('recursos.necesarios.update', editNecId.value)
     : route('recursos.necesarios.store')
+
   necesarioForm[method](url, {
     onSuccess: () => {
       showModalNec.value = false
       necesarioForm.reset()
+      Swal.fire({
+        icon: 'success',
+        title: editNecId.value ? 'Recurso necesario actualizado' : 'Recurso necesario registrado',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true
+      })
     },
+    onError: () => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al guardar recurso necesario',
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true
+      })
+    }
   })
 }
 
-function deleteNecesario(id) {
-  if (confirm('¿Eliminar recurso necesario?')) {
-    necesarioForm.delete(route('recursos.necesarios.destroy', id))
+
+async function deleteNecesario(id) {
+  const result = await Swal.fire({
+    title: '¿Eliminar recurso necesario?',
+    text: 'Esta acción no se puede deshacer.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  })
+
+  if (result.isConfirmed) {
+    necesarioForm.delete(route('recursos.necesarios.destroy', id), {
+      onSuccess: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Recurso eliminado',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true
+        })
+      },
+      onError: () => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al eliminar recurso',
+          showConfirmButton: false,
+          timer: 2500,
+          timerProgressBar: true
+        })
+      }
+    })
   }
 }
+
 </script>
 
 <template>

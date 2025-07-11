@@ -2,6 +2,7 @@
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { ref, computed } from 'vue'
 import { useForm } from '@inertiajs/vue3'
+import Swal from 'sweetalert2'
 
 const props = defineProps({
   proyecto_id: Number,
@@ -56,23 +57,72 @@ function openEdit(item) {
 function submit() {
   const method = editId.value ? 'put' : 'post'
   const url = editId.value
-   ? route('etapa7.inversiones.update', editId.value)
-   : route('etapa7.inversiones.store')
+    ? route('etapa7.inversiones.update', editId.value)
+    : route('etapa7.inversiones.store')
 
   inversionForm[method](url, {
     onSuccess: () => {
       showModal.value = false
       inversionForm.reset()
+      Swal.fire({
+        icon: 'success',
+        title: editId.value ? 'Inversión actualizada correctamente' : 'Inversión registrada correctamente',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true
+      })
+    },
+    onError: () => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Ocurrió un problema al guardar la inversión.',
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true
+      })
     }
   })
 }
 
+
+
 // Borrar inversión
-function remove(id) {
-  if (confirm('¿Eliminar esta inversión?')) {
-    inversionForm.delete(route('etapa7.inversiones.destroy', id))
+async function remove(id) {
+  const result = await Swal.fire({
+    title: '¿Estás seguro?',
+    text: 'Esta acción eliminará la inversión.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  })
+
+  if (result.isConfirmed) {
+    inversionForm.delete(route('etapa7.inversiones.destroy', id), {
+      onSuccess: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Inversión eliminada correctamente',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true
+        })
+      },
+      onError: () => {
+        Swal.fire({
+          icon: 'error',
+          title: 'No se pudo eliminar la inversión.',
+          showConfirmButton: false,
+          timer: 2500,
+          timerProgressBar: true
+        })
+      }
+    })
   }
 }
+
 </script>
 
 <template>
