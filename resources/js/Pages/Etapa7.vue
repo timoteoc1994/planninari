@@ -26,12 +26,23 @@ const inversionForm = useForm({
   vida_util:       '',
 })
 
-// Opciones de recursos según origen
-const recursoOptions = computed(() =>
-  inversionForm.tipo_origen === 'disponible'
+// Obtener IDs de recursos ya utilizados (excluyendo el que se está editando)
+const recursosUtilizados = computed(() => {
+  return props.inversiones
+    .filter(inv => editId.value === null || inv.id !== editId.value)
+    .filter(inv => inv.recurso_id) // Solo considerar inversiones con recurso_id válido
+    .map(inv => inv.recurso_id)
+})
+
+// Opciones de recursos según origen, filtradas por recursos no utilizados
+const recursoOptions = computed(() => {
+  const recursos = inversionForm.tipo_origen === 'disponible'
     ? props.disponibles
     : props.necesarios
-)
+  
+  // Filtrar recursos que no estén ya utilizados
+  return recursos.filter(recurso => !recursosUtilizados.value.includes(recurso.id))
+})
 
 // Abrir modal para nueva inversión
 function openNew() {
@@ -84,8 +95,6 @@ function submit() {
   })
 }
 
-
-
 // Borrar inversión
 async function remove(id) {
   const result = await Swal.fire({
@@ -123,6 +132,14 @@ async function remove(id) {
   }
 }
 
+const inversionesDisponibles = computed(() =>
+  props.inversiones.filter(inv => inv.tipo_origen === 'disponible')
+)
+
+const inversionesNecesarias = computed(() =>
+  props.inversiones.filter(inv => inv.tipo_origen === 'necesario')
+)
+
 </script>
 
 <template>
@@ -146,119 +163,88 @@ async function remove(id) {
       </div>
 
       <!-- Tabla responsive -->
-      <div class="bg-white rounded-lg shadow overflow-hidden">
-        <!-- Vista de tabla en desktop -->
-        <div class="hidden lg:block overflow-x-auto">
-          <table class="w-full table-auto">
-            <thead class="bg-gray-50">
-              <tr class="text-left">
-                <th class="px-4 py-3 text-sm font-medium text-gray-900">Origen</th>
-                <th class="px-4 py-3 text-sm font-medium text-gray-900">Recurso</th>
-                <th class="px-4 py-3 text-sm font-medium text-gray-900">Cantidad</th>
-                <th class="px-4 py-3 text-sm font-medium text-gray-900">Precio Unit.</th>
-                <th class="px-4 py-3 text-sm font-medium text-gray-900">Clasificación</th>
-                <th class="px-4 py-3 text-sm font-medium text-gray-900">Vida útil</th>
-                <th class="px-4 py-3 text-sm font-medium text-gray-900">Acciones</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-              <tr
-                v-for="inv in inversiones"
-                :key="inv.id"
-                class="hover:bg-gray-50"
-              >
-                <td class="px-4 py-3 text-sm text-gray-900">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                        :class="inv.tipo_origen === 'disponible' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'">
-                    {{ inv.tipo_origen }}
-                  </span>
-                </td>
-                <td class="px-4 py-3 text-sm text-gray-900">
-                  <div class="font-medium">{{ inv.recurso.tipo_recurso }}</div>
-                  <div class="text-gray-500">{{ inv.recurso.descripcion }}</div>
-                </td>
-                <td class="px-4 py-3 text-sm text-gray-900">{{ inv.cantidad }}</td>
-                <td class="px-4 py-3 text-sm text-gray-900">${{ inv.precio_unitario }}</td>
-                <td class="px-4 py-3 text-sm text-gray-900">{{ inv.clasificacion }}</td>
-                <td class="px-4 py-3 text-sm text-gray-900">{{ inv.vida_util }} años</td>
-                <td class="px-4 py-3 text-sm">
-                  <div class="flex space-x-2">
-                    <button
-                      @click="openEdit(inv)"
-                      class="text-blue-600 hover:text-blue-800 font-medium"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      @click="remove(inv.id)"
-                      class="text-red-600 hover:text-red-800 font-medium"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Vista de cards en mobile y tablet -->
-        <div class="lg:hidden">
-          <div class="divide-y divide-gray-200">
-            <div
-              v-for="inv in inversiones"
-              :key="inv.id"
-              class="p-4 hover:bg-gray-50"
-            >
-              <div class="flex justify-between items-start mb-3">
-                <div class="flex-1">
-                  <div class="flex items-center gap-2 mb-2">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                          :class="inv.tipo_origen === 'disponible' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'">
-                      {{ inv.tipo_origen }}
-                    </span>
-                  </div>
-                  <h4 class="font-medium text-gray-900">{{ inv.recurso.tipo_recurso }}</h4>
-                  <p class="text-sm text-gray-500">{{ inv.recurso.descripcion }}</p>
-                </div>
-                <div class="flex space-x-2 ml-4">
-                  <button
-                    @click="openEdit(inv)"
-                    class="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    @click="remove(inv.id)"
-                    class="text-red-600 hover:text-red-800 text-sm font-medium"
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              </div>
-              
-              <div class="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span class="text-gray-500">Cantidad:</span>
-                  <span class="ml-1 font-medium">{{ inv.cantidad }}</span>
-                </div>
-                <div>
-                  <span class="text-gray-500">Precio Unit.:</span>
-                  <span class="ml-1 font-medium">${{ inv.precio_unitario }}</span>
-                </div>
-                <div>
-                  <span class="text-gray-500">Clasificación:</span>
-                  <span class="ml-1 font-medium">{{ inv.clasificacion }}</span>
-                </div>
-                <div>
-                  <span class="text-gray-500">Vida útil:</span>
-                  <span class="ml-1 font-medium">{{ inv.vida_util }} años</span>
-                </div>
-              </div>
+      <!-- Tabla: Recursos Disponibles -->
+<div class="bg-white rounded-lg shadow overflow-hidden">
+  <h3 class="text-base font-semibold bg-green-50 px-4 py-3 text-green-800">Recursos Disponibles</h3>
+  <div class="w-full overflow-x-auto">
+    <table class="min-w-full table-auto">
+      <thead class="bg-gray-50">
+        <tr class="text-left">
+          <th class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">Recurso</th>
+          <th class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">Cantidad</th>
+          <th class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">Precio Unit.</th>
+          <th class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">Clasificación</th>
+          <th class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">Vida útil</th>
+          <th class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <tr
+          v-for="inv in inversionesDisponibles"
+          :key="inv.id"
+          class="hover:bg-gray-50"
+        >
+          <td class="px-4 py-3">
+            <div class="font-medium">{{ inv.recurso?.tipo_recurso || 'Recurso no encontrado' }}</div>
+            <div class="text-gray-500">{{ inv.recurso?.descripcion || 'Sin descripción' }}</div>
+          </td>
+          <td class="px-4 py-3">{{ inv.cantidad }}</td>
+          <td class="px-4 py-3">${{ inv.precio_unitario }}</td>
+          <td class="px-4 py-3">{{ inv.clasificacion }}</td>
+          <td class="px-4 py-3">{{ inv.vida_util }} años</td>
+          <td class="px-4 py-3">
+            <div class="flex space-x-2">
+              <button @click="openEdit(inv)" class="text-blue-600 hover:text-blue-800 font-medium">Editar</button>
+              <button @click="remove(inv.id)" class="text-red-600 hover:text-red-800 font-medium">Eliminar</button>
             </div>
-          </div>
-        </div>
-      </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Tabla: Recursos Necesarios -->
+<div class="bg-white rounded-lg shadow overflow-hidden mt-6">
+  <h3 class="text-base font-semibold bg-blue-50 px-4 py-3 text-blue-800">Recursos Necesarios</h3>
+  <div class="w-full overflow-x-auto">
+    <table class="min-w-full table-auto">
+      <thead class="bg-gray-50">
+        <tr class="text-left">
+          <th class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">Recurso</th>
+          <th class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">Cantidad</th>
+          <th class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">Precio Unit.</th>
+          <th class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">Clasificación</th>
+          <th class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">Vida útil</th>
+          <th class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <tr
+          v-for="inv in inversionesNecesarias"
+          :key="inv.id"
+          class="hover:bg-gray-50"
+        >
+          <td class="px-4 py-3">
+            <div class="font-medium">{{ inv.recurso?.tipo_recurso || 'Recurso no encontrado' }}</div>
+            <div class="text-gray-500">{{ inv.recurso?.descripcion || 'Sin descripción' }}</div>
+          </td>
+          <td class="px-4 py-3">{{ inv.cantidad }}</td>
+          <td class="px-4 py-3">${{ inv.precio_unitario }}</td>
+          <td class="px-4 py-3">{{ inv.clasificacion }}</td>
+          <td class="px-4 py-3">{{ inv.vida_util }} años</td>
+          <td class="px-4 py-3">
+            <div class="flex space-x-2">
+              <button @click="openEdit(inv)" class="text-blue-600 hover:text-blue-800 font-medium">Editar</button>
+              <button @click="remove(inv.id)" class="text-red-600 hover:text-red-800 font-medium">Eliminar</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 
       <!-- Modal Inversión -->
       <div
@@ -312,6 +298,10 @@ async function remove(id) {
                     {{ r.tipo_recurso }} – {{ r.descripcion }}
                   </option>
                 </select>
+                <!-- Mensaje informativo si no hay recursos disponibles -->
+                <p v-if="recursoOptions.length === 0" class="text-sm text-gray-500 mt-1">
+                  No hay recursos {{ inversionForm.tipo_origen === 'disponible' ? 'disponibles' : 'necesarios' }} sin utilizar.
+                </p>
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -371,6 +361,8 @@ async function remove(id) {
                 <button
                   type="submit"
                   class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors"
+                  :disabled="recursoOptions.length === 0"
+                  :class="{ 'opacity-50 cursor-not-allowed': recursoOptions.length === 0 }"
                 >
                   Guardar
                 </button>
