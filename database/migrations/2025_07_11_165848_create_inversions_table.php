@@ -7,9 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up()
     {
+        
         Schema::create('inversiones', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('proyecto_id');
+            $table->foreignId('proyecto_id')->constrained('projects')->onDelete('cascade');
             $table->unsignedBigInteger('user_id');
 
             // Origen del recurso: disponible o necesario
@@ -23,13 +24,7 @@ return new class extends Migration {
 
             $table->timestamps();
 
-            // FKs
-            $table->foreign('proyecto_id')
-                  ->references('id')->on('proyectos')
-                  ->onDelete('cascade');
-            $table->foreign('user_id')
-                  ->references('id')->on('users')
-                  ->onDelete('cascade');
+       
         });
     }
 

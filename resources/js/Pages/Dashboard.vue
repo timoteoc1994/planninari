@@ -1,7 +1,5 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import Welcome from '@/Components/Welcome.vue';
-import ProjectCard from '@/Components/ProjectCard.vue';
 import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 
@@ -47,7 +45,7 @@ const openEditModal = (project) => {
 };
 
 const updateProject = () => {
-    router.put(route('projects.update', editingProject.value.id), projectForm.value, {
+    router.post(route('projects.update', editingProject.value.id), projectForm.value, {
         onSuccess: () => {
             showEditModal.value = false;
             editingProject.value = null;
@@ -74,6 +72,15 @@ const closeModals = () => {
     showEditModal.value = false;
     editingProject.value = null;
     resetForm();
+};
+
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
 };
 </script>
 
@@ -103,14 +110,47 @@ const closeModals = () => {
                         <p class="text-gray-600">No tienes planes aún. ¡Crea tu primer plan!</p>
                     </div>
 
+                    <!-- Project Cards integradas directamente -->
                     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        <ProjectCard
+                        <div 
                             v-for="project in props.projects"
                             :key="project.id"
-                            :project="project"
-                            @edit="openEditModal"
-                            @delete="deleteProject"
-                        />
+                            class="bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6"
+                        >
+                            <div class=" justify-between items-start mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800 truncate">
+                                    {{ project.name }}
+                                </h3>
+                                <div class="flex">
+                                    
+                                    <button
+                                        @click="openEditModal(project)"
+                                        class="text-blue-600 hover:text-blue-800 text-sm bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded"
+                                        title="Editar"
+                                    >
+                                        ✏️ Editar
+                                    </button>
+                                    <button
+                                        @click="deleteProject(project.id)"
+                                        class="text-red-600 hover:text-red-800 text-sm bg-red-50 hover:bg-red-100 px-2 py-1 rounded"
+                                        title="Eliminar"
+                                    >
+                                        🗑️ Eliminar
+                                    </button>
+
+                                </div>
+                            </div>
+                            
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                                {{ project.description || 'Sin descripción' }}
+                            </p>
+                            
+                            <div class="text-xs text-gray-500">
+                                Creado: {{ formatDate(project.created_at) }}
+                            </div>
+
+                            
+                        </div>
                     </div>
                 </div>
             </div>
@@ -120,7 +160,12 @@ const closeModals = () => {
         <div v-if="showCreateModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" @click="closeModals">
             <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white" @click.stop>
                 <div class="mt-3">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Crear Nuevo Plan</h3>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-medium text-gray-900">Crear Nuevo Plan</h3>
+                        <button @click="closeModals" class="text-gray-400 hover:text-gray-600 text-xl">
+                            ✕
+                        </button>
+                    </div>
                     
                     <form @submit.prevent="createProject">
                         <div class="mb-4">
@@ -172,7 +217,12 @@ const closeModals = () => {
         <div v-if="showEditModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" @click="closeModals">
             <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white" @click.stop>
                 <div class="mt-3">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Editar Plan</h3>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-medium text-gray-900">Editar Plan</h3>
+                        <button @click="closeModals" class="text-gray-400 hover:text-gray-600 text-xl">
+                            ✕
+                        </button>
+                    </div>
                     
                     <form @submit.prevent="updateProject">
                         <div class="mb-4">

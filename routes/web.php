@@ -38,6 +38,9 @@ Route::middleware([
     Route::get('/etapa1/{id}', [Etapas::class, 'etapa1'])->name('etapa1');
     Route::post('/etapa1/{proyecto_id}', [Etapas::class, 'storeOrUpdate'])->name('etapa1.storeOrUpdate');
 
+     // Rutas para proyectos
+    Route::get('/projects/{id}', [ProjectStageController::class, 'show'])->name('projects.stages.show');
+
     //etapa 2
    Route::get('/proyectos/{proyecto_id}/integrantes', [IntegrantesController::class, 'index'])->name('integrantes.index');
     Route::get('/proyectos/{proyecto_id}/integrantes/create', [IntegrantesController::class, 'create'])->name('integrantes.create');
@@ -149,6 +152,7 @@ Route::delete('/recursos-necesarios/{id}', [Etapa4Controller::class,'necesariosD
 
     Route::get('/etapa5/{id}', [Etapas::class, 'etapa5'])->name('etapa5');
     Route::get('/etapa6/{id}', [Etapas::class, 'etapa6'])->name('etapa6');
+    Route::get('/etapa7/{id}', [Etapas::class, 'etapa7'])->name('etapa7');
     Route::get('/etapa8/{id}', [Etapas::class, 'etapa8'])->name('etapa8');
     Route::get('/etapa9/{id}', [Etapas::class, 'etapa9'])->name('etapa9');
     Route::get('/etapa10/{id}', [Etapas::class, 'etapa10'])->name('etapa10');

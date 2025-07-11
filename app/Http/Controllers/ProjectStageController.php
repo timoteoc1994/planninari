@@ -16,6 +16,14 @@ class ProjectStageController extends Controller
             'projects' => $proyecto
         ]);
     }
+    public function show($id)
+    {
+     
+        $project = Project::findOrFail($id);
+        return Inertia::render('ProjectStages', [
+            'project' => $project,
+        ]);
+    }
    public function projectsstore(Request $request)
     {
        $validated = $request->validate([
@@ -43,4 +51,12 @@ class ProjectStageController extends Controller
 
         return redirect()->back()->with('success', 'Datos actualizados correctamente');
     }
+    public function projectsdestroy($id)
+    {
+        $project = Project::findOrFail($id);
+        $project->delete();
+
+        return redirect()->back()->with('success', 'Proyecto eliminado correctamente');
+    }
+    
 }

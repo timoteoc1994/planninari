@@ -13,6 +13,20 @@ return new class extends Migration
     {
         Schema::create('recursos_claves', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->foreignId('proyecto_id')->constrained('projects')->onDelete('cascade');
+            
+            // Campos específicos para recursos claves
+            $table->string('nombre');
+            $table->text('descripcion')->nullable();
+            $table->enum('tipo', ['humano', 'tecnologico', 'financiero', 'material', 'intelectual'])->default('material');
+            $table->decimal('costo_estimado', 10, 2)->nullable();
+            $table->string('proveedor')->nullable();
+            $table->enum('disponibilidad', ['disponible', 'necesario', 'en_proceso'])->default('necesario');
+            $table->date('fecha_necesaria')->nullable();
+            $table->text('notas')->nullable();
+
+
             $table->timestamps();
         });
     }

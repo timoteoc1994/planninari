@@ -5,10 +5,9 @@ import { usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
     project: Object,
-    stages: Array,
 });
 
-const stages = ref(props.stages);
+const stages = ref([]);
 </script>
 
 <template>
