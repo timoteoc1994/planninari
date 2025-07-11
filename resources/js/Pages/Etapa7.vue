@@ -32,13 +32,14 @@ console.log('🧾 Form inicial:', inversionForm)
 
 // Obtener IDs de recursos ya utilizados (excluyendo el que se está editando)
 const recursosUtilizados = computed(() => {
-  const usados = props.inversiones
+  const tipo = inversionForm.tipo_origen
+  return props.inversiones
+    .filter(inv => inv.tipo_origen === tipo) 
     .filter(inv => editId.value === null || inv.id !== editId.value)
     .filter(inv => inv.recurso_id)
     .map(inv => inv.recurso_id)
-  console.log('🔎 Recursos ya utilizados:', usados)
-  return usados
 })
+
 
 // Opciones de recursos según origen, filtradas por recursos no utilizados
 const recursoOptions = computed(() => {
