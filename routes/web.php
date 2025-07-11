@@ -70,6 +70,32 @@ Route::middleware([
     Route::post('/relacionclientes', [Etapa4Controller::class, 'relacionclientesstore'])->name('relacionclientes.store');
     Route::post('/relacionclientes/{id}', [Etapa4Controller::class, 'relacionclientesupdate'])->name('relacionclientes.update');
 
+    //canales
+    Route::get('/canales/{id}', [Etapa4Controller::class, 'canales'])->name('index.canales');
+    Route::post('/canales', [Etapa4Controller::class, 'canalesstore'])->name('canales.store');
+    Route::post('/canales/{id}', [Etapa4Controller::class, 'canalesupdate'])->name('canales.update');
+
+    //actividades clave
+    Route::get('/actividadesclave/{id}', [Etapa4Controller::class, 'actividadesclave'])->name('index.actividadesclave');
+    Route::post('/actividadesclave', [Etapa4Controller::class, 'actividadesclavestore'])->name('actividadesclave.store');
+    Route::post('/actividadesclave/{id}', [Etapa4Controller::class, 'actividadesclaveupdate'])->name('actividadesclave.update');
+    //sub rutas de activiadades clave -proceso productivo
+    Route::post('/proceso-productivo', [Etapa4Controller::class, 'procesoProductivoStore'])->name('proceso-productivo.store');
+    Route::post('/proceso-productivo/{id}', [Etapa4Controller::class, 'procesoProductivoUpdate'])->name('proceso-productivo.update');
+    Route::delete('/proceso-productivo/{id}', [Etapa4Controller::class, 'procesoProductivoDestroy'])->name('proceso-productivo.destroy');
+    //sub rutas de actividades clave -proceso comercial
+    Route::post('/proceso-comercial', [Etapa4Controller::class, 'procesoComercialStore'])->name('proceso-comercial.store');
+    Route::post('/proceso-comercial/{id}', [Etapa4Controller::class, 'procesoComercialUpdate'])->name('proceso-comercial.update');
+    Route::delete('/proceso-comercial/{id}', [Etapa4Controller::class, 'procesoComercialDestroy'])->name('proceso-comercial.destroy');
+
+    //rutas alianzas clave
+    Route::get('/alianzasclave/{id}', [Etapa4Controller::class, 'alianzasclave'])->name('index.alianzasclave');
+    Route::post('/alianzasclave', [Etapa4Controller::class, 'alianzasclavestore'])->name('alianzasclave.store');
+    Route::post('/alianzasclave/{id}', [Etapa4Controller::class, 'alianzasclaveupdate'])->name('alianzasclave.update');
+    Route::delete('/alianzasclave/{id}', [Etapa4Controller::class, 'alianzasclavedestroy'])->name('alianzasclave.destroy');
+
+
+
     Route::get('/etapa5/{id}', [Etapas::class, 'etapa5'])->name('etapa5');
     Route::get('/etapa6/{id}', [Etapas::class, 'etapa6'])->name('etapa6');
     Route::get('/etapa7/{id}', [Etapas::class, 'etapa7'])->name('etapa7');

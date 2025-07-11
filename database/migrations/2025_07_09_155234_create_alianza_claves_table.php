@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('alianza_claves', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('proyecto_id');
+            $table->string('nombrealiado');
+            $table->text('descripcion');
             $table->timestamps();
         });
     }

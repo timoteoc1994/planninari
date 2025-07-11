@@ -13,6 +13,19 @@ return new class extends Migration
     {
         Schema::create('canales', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('proyecto_id');
+            $table->string('canalescomunicacion');
+            $table->string('canalesdistribucion')->nullable();
+            $table->string('facebook')->nullable();
+            $table->string('instagram')->nullable();
+            $table->string('whatsapp')->nullable();
+            $table->string('linkedin')->nullable();
+            $table->string('tiktok')->nullable();
+            $table->string('twitter')->nullable();
+            $table->string('youtube')->nullable();
+            $table->string('web')->nullable();
+            $table->string('otro')->nullable();
             $table->timestamps();
         });
     }
