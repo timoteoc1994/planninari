@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('proyecto_id')->constrained('projects')->onDelete('cascade');
             
             // Campos específicos para recursos claves
-            $table->string('nombre');
+            $table->string('nombre')->nullable();
             $table->text('descripcion')->nullable();
             $table->enum('tipo', ['humano', 'tecnologico', 'financiero', 'material', 'intelectual'])->default('material');
             $table->decimal('costo_estimado', 10, 2)->nullable();

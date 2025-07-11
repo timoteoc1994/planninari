@@ -152,7 +152,6 @@ Route::delete('/recursos-necesarios/{id}', [Etapa4Controller::class,'necesariosD
 
     Route::get('/etapa5/{id}', [Etapas::class, 'etapa5'])->name('etapa5');
     Route::get('/etapa6/{id}', [Etapas::class, 'etapa6'])->name('etapa6');
-    Route::get('/etapa7/{id}', [Etapas::class, 'etapa7'])->name('etapa7');
     Route::get('/etapa8/{id}', [Etapas::class, 'etapa8'])->name('etapa8');
     Route::get('/etapa9/{id}', [Etapas::class, 'etapa9'])->name('etapa9');
     Route::get('/etapa10/{id}', [Etapas::class, 'etapa10'])->name('etapa10');
