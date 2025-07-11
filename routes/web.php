@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Etapa3Controller;
 use App\Http\Controllers\Etapa4Controller;
+use App\Http\Controllers\Etapa5Controller;
+use App\Http\Controllers\Etapa6Controller;
+use App\Http\Controllers\Etapa7Controller;
 use App\Http\Controllers\Etapas;
 use App\Http\Controllers\IntegrantesController;
 use Illuminate\Foundation\Application;
@@ -60,6 +63,45 @@ Route::middleware([
     Route::post('/propuestavalor/{id}', [Etapa4Controller::class, 'propuestavalorupdate'])->name('propuestavalor.update');
     Route::delete('/propuesta-valor/{id}/imagen', [Etapa4Controller::class, 'eliminarImagen'])->name('propuestavalor.eliminar.imagen');
 
+    // recursos clave
+// RecursosClave (padre)
+Route::get('/recursosclave/{id}', [Etapa4Controller::class,'recursosclave'])
+     ->name('index.recursosclave');
+Route::post('/recursosclave', [Etapa4Controller::class,'recursosclavestore'])
+     ->name('recursosclave.store');
+Route::post('/recursosclave/{id}', [Etapa4Controller::class,'recursosclaveupdate'])
+     ->name('recursosclave.update');
+
+// Hijos: Disponibles
+Route::get('/recursos-disponibles/{clave_id}', [Etapa4Controller::class,'disponibles'])
+     ->name('recursos.disponibles.index');
+Route::post('/recursos-disponibles', [Etapa4Controller::class,'disponiblesStore'])
+     ->name('recursos.disponibles.store');
+Route::put('/recursos-disponibles/{id}', [Etapa4Controller::class,'disponiblesUpdate'])
+     ->name('recursos.disponibles.update');
+Route::delete('/recursos-disponibles/{id}', [Etapa4Controller::class,'disponiblesDelete'])
+     ->name('recursos.disponibles.destroy');
+
+// Hijos: Necesarios
+Route::get('/recursos-necesarios/{clave_id}', [Etapa4Controller::class,'necesarios'])
+     ->name('recursos.necesarios.index');
+Route::post('/recursos-necesarios', [Etapa4Controller::class,'necesariosStore'])
+     ->name('recursos.necesarios.store');
+Route::put('/recursos-necesarios/{id}', [Etapa4Controller::class,'necesariosUpdate'])
+     ->name('recursos.necesarios.update');
+Route::delete('/recursos-necesarios/{id}', [Etapa4Controller::class,'necesariosDelete'])
+     ->name('recursos.necesarios.destroy');
+
+
+    Route::get('/etapa7/{id}', [Etapa7Controller::class, 'inversiones'])
+         ->name('etapa7.index');
+    Route::post  ('/etapa7/inversiones',       [Etapa7Controller::class, 'inversionesStore'])
+         ->name('etapa7.inversiones.store');
+    Route::put   ('/etapa7/inversiones/{id}',  [Etapa7Controller::class, 'inversionesUpdate'])
+         ->name('etapa7.inversiones.update');
+    Route::delete('/etapa7/inversiones/{id}',  [Etapa7Controller::class, 'inversionesDelete'])
+         ->name('etapa7.inversiones.destroy');
+
     //rutas para segmento de clientes
     Route::get('/segmentoclientes/{id}', [Etapa4Controller::class, 'segmentoclientes'])->name('index.segmentoclientes');
     Route::post('/segmentoclientes', [Etapa4Controller::class, 'segmentoclientesstore'])->name('segmentoclientes.store');
@@ -70,6 +112,15 @@ Route::middleware([
     Route::post('/relacionclientes', [Etapa4Controller::class, 'relacionclientesstore'])->name('relacionclientes.store');
     Route::post('/relacionclientes/{id}', [Etapa4Controller::class, 'relacionclientesupdate'])->name('relacionclientes.update');
 
+    Route::get('/etapa5/{proyecto}',  [Etapa5Controller::class, 'index'])->name('etapa5');
+    Route::post('/etapa5',            [Etapa5Controller::class, 'store'])->name('etapa5.store');
+    Route::put('/etapa5/{etapa5}',    [Etapa5Controller::class, 'update'])->name('etapa5.update');
+
+    Route::get('/etapa6/{proyecto}',    [Etapa6Controller::class, 'index'])->name('etapa6');
+    Route::post('/etapa6',              [Etapa6Controller::class, 'store'])->name('etapa6.store');
+    Route::put('/etapa6/{etapa6}',      [Etapa6Controller::class, 'update'])->name('etapa6.update');
+
+    
     //canales
     Route::get('/canales/{id}', [Etapa4Controller::class, 'canales'])->name('index.canales');
     Route::post('/canales', [Etapa4Controller::class, 'canalesstore'])->name('canales.store');
@@ -98,7 +149,6 @@ Route::middleware([
 
     Route::get('/etapa5/{id}', [Etapas::class, 'etapa5'])->name('etapa5');
     Route::get('/etapa6/{id}', [Etapas::class, 'etapa6'])->name('etapa6');
-    Route::get('/etapa7/{id}', [Etapas::class, 'etapa7'])->name('etapa7');
     Route::get('/etapa8/{id}', [Etapas::class, 'etapa8'])->name('etapa8');
     Route::get('/etapa9/{id}', [Etapas::class, 'etapa9'])->name('etapa9');
     Route::get('/etapa10/{id}', [Etapas::class, 'etapa10'])->name('etapa10');

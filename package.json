@@ -19,6 +19,7 @@
         "vue": "^3.3.13"
     },
     "dependencies": {
+        "sweetalert2": "^11.22.2",
         "ziggy-js": "^2.5.3"
     }
 }

@@ -32,7 +32,7 @@ const props = defineProps({
                         </h3>
                         <Link
                             :href="
-                                route('index.propuestavalor', {
+                                route('index.recursosclave', {
                                     id: props.proyecto_id,
                                 })
                             "
@@ -152,7 +152,7 @@ const props = defineProps({
                         </h3>
                         <Link
                             :href="
-                                route('index.propuestavalor', {
+                                route('index.recursosclave', {
                                     id: props.proyecto_id,
                                 })
                             "

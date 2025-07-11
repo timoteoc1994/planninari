@@ -8,6 +8,9 @@ use App\Models\ProcesoComercial;
 use App\Models\ProcesoProductivo;
 use App\Models\PropuestaValor;
 use App\Models\RelacionClientes;
+use App\Models\Recursosclave;
+use App\Models\RecursoDisponible;
+use App\Models\RecursoNecesario;
 use App\Models\SegmentoClientes;
 use App\Models\AlianzaClave;
 use Illuminate\Http\Request;
@@ -227,6 +230,96 @@ class Etapa4Controller extends Controller
             ->update($validated);
         return redirect()->back()->with('success', 'Relación con clientes actualizada correctamente');
     }
+
+    // Mostrar RecursosClave + listas
+public function recursosclave($id)
+{
+    $user = Auth::user();
+    $clave = RecursosClave::firstOrCreate(
+        ['proyecto_id'=>$id, 'user_id'=>$user->id]
+    );
+
+    return Inertia::render('Etapa4/RecursosClave', [
+        'proyecto_id'    => $id,
+        'recursos_clave' => $clave,
+        'disponibles'    => $clave->disponibles,
+        'necesarios'     => $clave->necesarios,
+    ]);
+}
+
+// CRUD Recursos Disponibles
+public function disponiblesStore(Request $r)
+{
+    $r->validate([
+        'recursos_clave_id'=>'required|integer',
+        'tipo_recurso'=>'required|string',
+        'descripcion'=>'required|string',
+        'cantidad'=>'required|integer',
+        'estado'=>'required|string',
+        'importancia'=>'required|string',
+        'descripcion_importancia'=>'nullable|string',
+    ]);
+    RecursoDisponible::create($r->all());
+    return back()->with('success','Recurso disponible añadido');
+}
+
+public function disponiblesUpdate(Request $r, $id)
+{
+    $r->validate([
+        'tipo_recurso'=>'required|string',
+        'descripcion'=>'required|string',
+        'cantidad'=>'required|integer',
+        'estado'=>'required|string',
+        'importancia'=>'required|string',
+        'descripcion_importancia'=>'nullable|string',
+    ]);
+    RecursoDisponible::findOrFail($id)->update($r->all());
+    return back()->with('success','Recurso disponible actualizado');
+}
+
+public function disponiblesDelete($id)
+{
+    RecursoDisponible::destroy($id);
+    return back()->with('success','Recurso disponible eliminado');
+}
+
+// CRUD Recursos Necesarios
+public function necesariosStore(Request $r)
+{
+    $r->validate([
+        'recursos_clave_id'=>'required|integer',
+        'tipo_recurso'=>'required|string',
+        'descripcion'=>'required|string',
+        'cantidad'=>'required|integer',
+        'aporte_objetivo'=>'required|string',
+        'porcentaje'=>'required|numeric',
+        'precio'=>'required|numeric',
+        'puede_adquirir'=>'required|boolean',
+    ]);
+    RecursoNecesario::create($r->all());
+    return back()->with('success','Recurso necesario añadido');
+}
+
+public function necesariosUpdate(Request $r, $id)
+{
+    $r->validate([
+        'tipo_recurso'=>'required|string',
+        'descripcion'=>'required|string',
+        'cantidad'=>'required|integer',
+        'aporte_objetivo'=>'required|string',
+        'porcentaje'=>'required|numeric',
+        'precio'=>'required|numeric',
+        'puede_adquirir'=>'required|boolean',
+    ]);
+    RecursoNecesario::findOrFail($id)->update($r->all());
+    return back()->with('success','Recurso necesario actualizado');
+}
+
+public function necesariosDelete($id)
+{
+    RecursoNecesario::destroy($id);
+    return back()->with('success','Recurso necesario eliminado');
+}
 
     //funciones para canales
     public function canales($id)
