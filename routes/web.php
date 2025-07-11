@@ -62,6 +62,35 @@ Route::middleware([
     Route::post('/propuestavalor/{id}', [Etapa4Controller::class, 'propuestavalorupdate'])->name('propuestavalor.update');
     Route::delete('/propuesta-valor/{id}/imagen', [Etapa4Controller::class, 'eliminarImagen'])->name('propuestavalor.eliminar.imagen');
 
+    // recursos clave
+// RecursosClave (padre)
+Route::get('/recursosclave/{id}', [Etapa4Controller::class,'recursosclave'])
+     ->name('index.recursosclave');
+Route::post('/recursosclave', [Etapa4Controller::class,'recursosclavestore'])
+     ->name('recursosclave.store');
+Route::post('/recursosclave/{id}', [Etapa4Controller::class,'recursosclaveupdate'])
+     ->name('recursosclave.update');
+
+// Hijos: Disponibles
+Route::get('/recursos-disponibles/{clave_id}', [Etapa4Controller::class,'disponibles'])
+     ->name('recursos.disponibles.index');
+Route::post('/recursos-disponibles', [Etapa4Controller::class,'disponiblesStore'])
+     ->name('recursos.disponibles.store');
+Route::put('/recursos-disponibles/{id}', [Etapa4Controller::class,'disponiblesUpdate'])
+     ->name('recursos.disponibles.update');
+Route::delete('/recursos-disponibles/{id}', [Etapa4Controller::class,'disponiblesDelete'])
+     ->name('recursos.disponibles.destroy');
+
+// Hijos: Necesarios
+Route::get('/recursos-necesarios/{clave_id}', [Etapa4Controller::class,'necesarios'])
+     ->name('recursos.necesarios.index');
+Route::post('/recursos-necesarios', [Etapa4Controller::class,'necesariosStore'])
+     ->name('recursos.necesarios.store');
+Route::put('/recursos-necesarios/{id}', [Etapa4Controller::class,'necesariosUpdate'])
+     ->name('recursos.necesarios.update');
+Route::delete('/recursos-necesarios/{id}', [Etapa4Controller::class,'necesariosDelete'])
+     ->name('recursos.necesarios.destroy');
+
     //rutas para segmento de clientes
     Route::get('/segmentoclientes/{id}', [Etapa4Controller::class, 'segmentoclientes'])->name('index.segmentoclientes');
     Route::post('/segmentoclientes', [Etapa4Controller::class, 'segmentoclientesstore'])->name('segmentoclientes.store');
