@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActividadesClave;
+use App\Models\Canales;
+use App\Models\ProcesoComercial;
+use App\Models\ProcesoProductivo;
 use App\Models\PropuestaValor;
 use App\Models\RelacionClientes;
 use App\Models\Recursosclave;
 use App\Models\RecursoDisponible;
 use App\Models\RecursoNecesario;
 use App\Models\SegmentoClientes;
+use App\Models\AlianzaClave;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -208,7 +213,7 @@ class Etapa4Controller extends Controller
         $validated = $request->validate([
             'proyecto_id' => 'required|integer',
             'relacion_clientes' => 'required|string|max:1000',
-        ]); 
+        ]);
         $validated['user_id'] = Auth::id();
         RelacionClientes::create($validated);
         return redirect()->back()->with('success', 'Relación con clientes guardada correctamente');
@@ -316,4 +321,238 @@ public function necesariosDelete($id)
     return back()->with('success','Recurso necesario eliminado');
 }
 
+    //funciones para canales
+    public function canales($id)
+    {
+        $user = Auth::user();
+        $canales = Canales::where('proyecto_id', $id)
+            ->where('user_id', $user->id)
+            ->first();
+        return Inertia::render('Etapa4/Canales', [
+            'proyecto_id' => $id,
+            'canales' => $canales,
+        ]);
+    }
+    public function canalesstore(Request $request)
+    {
+
+        $validated = $request->validate([
+            'proyecto_id' => 'required|integer',
+            'canalescomunicacion' => 'nullable|string|max:1000',
+            'canalesdistribucion' => 'nullable|string|max:1000',
+            'facebook' => 'nullable|string|max:1000',
+            'instagram' => 'nullable|string|max:1000',
+            'whatsapp' => 'nullable|string|max:1000',
+            'linkedin' => 'nullable|string|max:1000',
+            'tiktok' => 'nullable|string|max:1000',
+            'twitter' => 'nullable|string|max:1000',
+            'youtube' => 'nullable|string|max:1000',
+            'web' => 'nullable|string|max:1000',
+            'otro' => 'nullable|string|max:1000',
+        ]);
+        $validated['user_id'] = Auth::id();
+        Canales::create($validated);
+        return redirect()->back()->with('success', 'Canales guardados correctamente');
+    }
+    public function canalesupdate(Request $request)
+    {
+        $validated = $request->validate([
+            'proyecto_id' => 'required|integer',
+            'canalescomunicacion' => 'required|string|max:1000',
+            'canalesdistribucion' => 'nullable|string|max:1000',
+            'facebook' => 'nullable|string|max:1000',
+            'instagram' => 'nullable|string|max:1000',
+            'whatsapp' => 'nullable|string|max:1000',
+            'linkedin' => 'nullable|string|max:1000',
+            'tiktok' => 'nullable|string|max:1000',
+            'twitter' => 'nullable|string|max:1000',
+            'youtube' => 'nullable|string|max:1000',
+            'web' => 'nullable|string|max:1000',
+            'otro' => 'nullable|string|max:1000',
+        ]);
+        $validated['user_id'] = Auth::id();
+        Canales::where('proyecto_id', $request->proyecto_id)
+            ->where('user_id', Auth::id())
+            ->update($validated);
+        return redirect()->back()->with('success', 'Canales actualizados correctamente');
+    }
+
+    //funciones para actividades clave
+    public function actividadesclave($id)
+    {
+        $user = Auth::user();
+        $actividadesclave = ActividadesClave::where('proyecto_id', $id)
+            ->where('user_id', $user->id)
+            ->first();
+        $procesocomercial = ProcesoComercial::where('proyecto_id', $id)
+            ->where('user_id', $user->id)
+            ->get();
+        $procesoproductivo = ProcesoProductivo::where('proyecto_id', $id)
+            ->where('user_id', $user->id)
+            ->get();
+        return Inertia::render('Etapa4/ActividadesClave', [
+            'proyecto_id' => $id,
+            'actividadesclave' => $actividadesclave,
+            'procesocomercial' => $procesocomercial,
+            'procesoproductivo' => $procesoproductivo,
+        ]);
+    }
+    public function actividadesclavestore(Request $request)
+    {
+        $validated = $request->validate([
+            'proyecto_id' => 'required|integer',
+            'actividad_clave' => 'required|string|max:1000',
+            'archivo' => 'nullable|max:5048',
+        ]);
+        $validated['user_id'] = Auth::id();
+        // Manejo de imagen
+        if ($request->hasFile('archivo')) {
+            $validated['archivo'] = $request->file('archivo')->store('actividadesclave', 'public');
+        } else {
+            // Si es update y no sube nueva imagen, mantener la anterior
+            unset($validated['archivo']);
+        }
+        ActividadesClave::create($validated);
+        return redirect()->back()->with('success', 'Actividad clave guardada correctamente');
+    }
+    public function actividadesclaveupdate(Request $request, $id)
+    {
+       
+        $validated = $request->validate([
+            'proyecto_id' => 'required|integer',
+            'actividad_clave' => 'required|string|max:1000',
+            'archivo' => 'nullable|max:5048',
+        ]);
+        $validated['user_id'] = Auth::id();
+
+        // Manejo de imagen
+        if ($request->hasFile('archivo')) {
+            $validated['archivo'] = $request->file('archivo')->store('actividadesclave', 'public');
+            //eliminar archivo anterior si existe
+            $actividadClave = ActividadesClave::find($id);
+            if ($actividadClave && $actividadClave->archivo) {
+                $oldFilePath = public_path('storage/' . $actividadClave->archivo);
+                if (file_exists($oldFilePath)) {
+                    unlink($oldFilePath);
+                }
+            }
+        } else {
+            // Si es update y no sube nueva imagen, mantener la anterior
+            unset($validated['archivo']);
+        }
+
+        ActividadesClave::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->update($validated);
+        return redirect()->back()->with('success', 'Actividad clave actualizada correctamente');
+    }
+
+    //sub rutas de actividades clave -proceso productivo
+    public function procesoProductivoStore(Request $request)
+    {
+        $validated = $request->validate([
+            'proyecto_id' => 'required|integer',
+            'paso' => 'required|string|max:1000',
+        ]);
+        $validated['user_id'] = Auth::id();
+        ProcesoProductivo::create($validated);
+        return redirect()->back()->with('success', 'Proceso productivo guardado correctamente');
+    }
+
+    public function procesoProductivoUpdate(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'proyecto_id' => 'required|integer',
+            'paso' => 'required|string|max:1000',
+        ]);
+        $validated['user_id'] = Auth::id();
+        ProcesoProductivo::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->update($validated);
+        return redirect()->back()->with('success', 'Proceso productivo actualizado correctamente');
+    }
+    public function procesoProductivoDestroy($id)
+    {
+        $user = Auth::user();
+        ProcesoProductivo::where('id', $id)
+            ->where('user_id', $user->id)
+            ->delete();
+        return redirect()->back()->with('success', 'Proceso productivo eliminado correctamente');
+    }
+    //sub rutas de actividades clave -proceso comercial
+    public function procesoComercialStore(Request $request)
+    {
+        $validated = $request->validate([
+            'proyecto_id' => 'required|integer',
+            'paso' => 'required|string|max:1000',
+        ]);
+        $validated['user_id'] = Auth::id();
+        ProcesoComercial::create($validated);
+        return redirect()->back()->with('success', 'Proceso comercial guardado correctamente');
+    }
+    public function procesoComercialUpdate(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'proyecto_id' => 'required|integer',
+            'paso' => 'required|string|max:1000',
+        ]);
+        $validated['user_id'] = Auth::id();
+        ProcesoComercial::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->update($validated);
+        return redirect()->back()->with('success', 'Proceso comercial actualizado correctamente');
+    }
+    public function procesoComercialDestroy($id)
+    {
+        $user = Auth::user();
+        ProcesoComercial::where('id', $id)
+            ->where('user_id', $user->id)
+            ->delete();
+        return redirect()->back()->with('success', 'Proceso comercial eliminado correctamente');
+    }
+
+    //funciones alianzas clave 
+    public function alianzasclave($id)
+    {
+        $user = Auth::user();
+        $alianzasclave = AlianzaClave::where('proyecto_id', $id)
+            ->where('user_id', $user->id)
+            ->get();
+        return Inertia::render('Etapa4/AlianzaClave', [
+            'proyecto_id' => $id,
+            'alianzasclave' => $alianzasclave,
+        ]);
+    }
+    public function alianzasclavestore(Request $request)
+    {
+        $validated = $request->validate([
+            'proyecto_id' => 'required|integer',
+            'nombrealiado' => 'required|string|max:250',
+            'descripcion' => 'required|string|max:1000',
+        ]); 
+        $validated['user_id'] = Auth::id();
+        AlianzaClave::create($validated);
+        return redirect()->back()->with('success', 'Alianzas clave guardadas correctamente');
+    }
+    public function alianzasclaveupdate(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'proyecto_id' => 'required|integer',
+            'nombrealiado' => 'required|string|max:250',
+            'descripcion' => 'required|string|max:1000',
+        ]);
+        $validated['user_id'] = Auth::id();
+        AlianzaClave::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->update($validated);
+        return redirect()->back()->with('success', 'Alianzas clave actualizadas correctamente');
+    }
+    public function alianzasclavedestroy($id)
+    {
+        $user = Auth::user();
+        AlianzaClave::where('id', $id)
+            ->where('user_id', $user->id)
+            ->delete();
+        return redirect()->back()->with('success', 'Alianzas clave eliminadas correctamente');
+    }
 }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('segmento_clientes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('proyecto_id');
+            $table->foreignId('proyecto_id')->constrained('projects')->onDelete('cascade');
             $table->text('caracteristicas_segmento')->nullable();
             $table->string('segmento_empresas_geografico')->nullable();
             $table->string('segmento_empresas_nivel_ingreso')->nullable();

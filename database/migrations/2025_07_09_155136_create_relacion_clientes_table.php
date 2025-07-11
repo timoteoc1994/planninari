@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('relacion_clientes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('proyecto_id');
+            $table->foreignId('proyecto_id')->constrained('projects')->onDelete('cascade');
             $table->text('relacion_clientes')->nullable();
             $table->timestamps();
         });

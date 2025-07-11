@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('alianza_claves', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->foreignId('proyecto_id')->constrained('projects')->onDelete('cascade');
+            $table->string('nombrealiado');
+            $table->text('descripcion');
             $table->timestamps();
         });
     }

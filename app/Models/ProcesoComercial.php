@@ -4,18 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class AlianzaClave extends Model
+class ProcesoComercial extends Model
 {
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'alianza_claves';
+    protected $table = 'proceso_comercial';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
         'user_id',
         'proyecto_id',
-        'nombrealiado',
-        'descripcion',
+        'paso',
     ];
+
+    
 }

@@ -3,22 +3,44 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+
 
 class ProjectStageController extends Controller
 {
-    public function show(Project $project)
+    public function index(){
+        $user = Auth::user();
+        $proyecto = Project::where('user_id', $user->id)->get();
+        return Inertia::render('Dashboard', [
+            'projects' => $proyecto
+        ]);
+    }
+   public function projectsstore(Request $request)
     {
-        // Puedes cargar etapas desde la base de datos si las tienes, por ahora solo 10 vacías
-        $stages = collect(range(1, 10))->map(fn($i) => [
-            'number' => $i,
-            'name' => "Etapa $i",
-            'content' => null,
-        ]);
+       $validated = $request->validate([
+           'name' => 'required|string',
+           'description' => 'required|string|max:1000',
+       ]);
+       $validated['user_id'] = Auth::id();
 
-        return Inertia::render('ProjectStages', [
-            'project' => $project,
-            'stages' => $stages,
+        Project::create($validated);
+
+        return redirect()->back()->with('success', 'Datos guardados correctamente');
+    }
+
+    public function projectsupdate(Request $request, $id)
+    {
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:1000',
+            'description' => 'required|string|max:1000',
         ]);
+        $validated['user_id'] = Auth::id();
+
+        $project = Project::findOrFail($id);
+        $project->update($validated);
+
+        return redirect()->back()->with('success', 'Datos actualizados correctamente');
     }
 }

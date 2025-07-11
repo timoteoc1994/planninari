@@ -13,6 +13,26 @@ return new class extends Migration
     {
         Schema::create('actividades_claves', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->foreignId('proyecto_id')->constrained('projects')->onDelete('cascade');
+            $table->text('actividad_clave');
+            $table->string('archivo')->nullable();
+            $table->timestamps();
+        });
+
+         Schema::create('proceso_productivo', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->foreignId('proyecto_id')->constrained('projects')->onDelete('cascade');
+            $table->text('paso');
+            $table->timestamps();
+        });
+
+         Schema::create('proceso_comercial', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->foreignId('proyecto_id')->constrained('projects')->onDelete('cascade');
+            $table->text('paso');
             $table->timestamps();
         });
     }
