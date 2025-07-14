@@ -22,6 +22,7 @@
             <p v-if="form.errors.video" class="mt-2 text-sm text-red-600">
               {{ form.errors.video }}
             </p>
+
             <!-- Vista previa del video seleccionado -->
             <div v-else-if="previewUrl" class="mt-4 w-full flex flex-col items-center">
               <video
@@ -33,12 +34,15 @@
                 Vista previa: {{ form.video.name }}
               </p>
             </div>
-            <!-- Nombre del archivo si no hay vista previa -->
+
+            <!-- Archivo seleccionado sin vista previa -->
             <p v-else-if="form.video" class="mt-2 text-sm text-green-600">
               Archivo seleccionado: {{ form.video.name }}
             </p>
-            <p v-if="isEditing && etapa9.video_pitch_path" class="mt-4 text-sm text-gray-600">
-              Video actual:
+
+            <!-- Video guardado y opciones -->
+            <div v-if="isEditing && etapa9.video_pitch_path" class="mt-4 text-sm text-gray-600 flex flex-col items-center">
+              <p>Video actual:</p>
               <a
                 :href="`/storage/${etapa9.video_pitch_path}`"
                 class="underline text-blue-600"
@@ -46,7 +50,16 @@
               >
                 Ver video
               </a>
-            </p>
+              <button
+  type="button"
+  @click="deleteVideo()"
+  class="mt-2 text-red-600 hover:underline"
+  :disabled="form.processing"
+>
+  Eliminar video
+</button>
+
+            </div>
           </div>
 
           <p class="text-sm text-gray-700 mb-4">
@@ -91,14 +104,43 @@ const props = defineProps({
 })
 
 const isEditing = computed(() => Boolean(props.etapa9 && props.etapa9.id))
+const previewUrl = ref(null)
 
 const form = useForm({
   proyecto_id: props.proyecto_id,
   video: null,
+  delete_video: false,
 })
 
-// Estado para la URL de vista previa
-const previewUrl = ref(null)
+
+function deleteVideo() {
+  Swal.fire({
+    title: '¿Eliminar video?',
+    text: 'Esto removerá el video actual del pitch.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+  }).then(result => {
+    if (!result.isConfirmed) return;
+
+    // Usa Inertia para DELETE
+    form.delete(route('etapa9.destroyVideo', props.etapa9.id), {
+      preserveScroll: true,
+      onSuccess: () => {
+        Swal.fire('Eliminado', 'Video borrado correctamente.', 'success');
+        previewUrl.value = null;          // limpia vista previa
+        form.video = null;                // limpia input file
+        // O bien recarga la página / datos
+      },
+      onError: errors => {
+        console.error(errors);
+        Swal.fire('Error', 'No se pudo eliminar el video.', 'error');
+      },
+    });
+  });
+}
+
 
 function submit() {
   if (!isEditing.value && !form.video) {
@@ -110,48 +152,30 @@ function submit() {
     ? route('etapa9.update', props.etapa9.id)
     : route('etapa9.store')
 
-  if (isEditing.value) {
-    // UPDATE: siempre POST + spoofing
-    form.post(url, {
-      data: { _method: 'PUT' },
-      forceFormData: true,
-      preserveScroll: true,
-      onSuccess: () => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Actualizado',
-          text: 'Video actualizado correctamente.',
-          timer: 2000,
-          showConfirmButton: false,
-        })
-      },
-      onError: errors => {
-        console.error(errors)
-        Swal.fire('Error', Object.values(errors).join('<br>'), 'error')
-      },
-    })
-  } else {
-    // CREATE: POST normal
-    form.post(url, {
-      forceFormData: true,
-      preserveScroll: true,
-      onSuccess: () => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Guardado',
-          text: 'Video guardado correctamente.',
-          timer: 2000,
-          showConfirmButton: false,
-        })
-      },
-      onError: errors => {
-        console.error(errors)
-        Swal.fire('Error', Object.values(errors).join('<br>'), 'error')
-      },
-    })
+  // Always POST with spoofed method for update
+  const options = {
+    data: isEditing.value ? { _method: 'PUT', delete_video: form.delete_video } : {},
+    forceFormData: true,
+    preserveScroll: true,
+    onSuccess: () => {
+      Swal.fire({
+        icon: 'success',
+        title: isEditing.value ? 'Actualizado' : 'Guardado',
+        text: isEditing.value
+          ? 'Video actualizado correctamente.'
+          : 'Video guardado correctamente.',
+        timer: 2000,
+        showConfirmButton: false,
+      })
+    },
+    onError: errors => {
+      console.error(errors)
+      Swal.fire('Error', Object.values(errors).join('<br>'), 'error')
+    },
   }
-}
 
+  form.post(url, options)
+}
 
 function handleFileChange(event) {
   const file = event.target.files[0]
@@ -172,5 +196,21 @@ function handleFileChange(event) {
 
   form.video = file
   previewUrl.value = URL.createObjectURL(file)
+}
+
+function confirmDelete() {
+  Swal.fire({
+    title: '¿Eliminar video?',
+    text: 'Esto removerá el video actual del pitch.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+  }).then(result => {
+    if (result.isConfirmed) {
+      form.delete_video = true
+      submit()
+    }
+  })
 }
 </script>

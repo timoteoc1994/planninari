@@ -79,4 +79,20 @@ class Etapa9Controller extends Controller
         return redirect()->back()
                          ->with('success', 'Video actualizado correctamente.');
     }
+
+    public function destroyVideo(Etapa9 $etapa9)
+{
+    if ($etapa9->video_pitch_path
+        && Storage::disk('public')->exists($etapa9->video_pitch_path)
+    ) {
+        Storage::disk('public')->delete($etapa9->video_pitch_path);
+    }
+
+    // Limpia el campo en la base de datos
+    $etapa9->video_pitch_path = null;
+    $etapa9->save();
+
+    return back()->with('success', 'Video eliminado correctamente.');
+}
+
 }

@@ -159,6 +159,9 @@ Route::post('/etapa9', [Etapa9Controller::class, 'store'])
 // Para actualizar - usar el ID del registro etapa9, no del proyecto
 Route::post('/etapa9/{etapa9}', [Etapa9Controller::class, 'update'])
      ->name('etapa9.update');
+     // Nueva ruta para borrar sólo el video
+Route::delete('/etapa9/{etapa9}/video',     [Etapa9Controller::class, 'destroyVideo'])
+     ->name('etapa9.destroyVideo');
 
     Route::get('/etapa5/{id}', [Etapas::class, 'etapa5'])->name('etapa5');
     Route::get('/etapa6/{id}', [Etapas::class, 'etapa6'])->name('etapa6');
