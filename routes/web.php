@@ -5,6 +5,7 @@ use App\Http\Controllers\Etapa4Controller;
 use App\Http\Controllers\Etapa5Controller;
 use App\Http\Controllers\Etapa6Controller;
 use App\Http\Controllers\Etapa7Controller;
+use App\Http\Controllers\Etapa9Controller;
 use App\Http\Controllers\Etapas;
 use App\Http\Controllers\IntegrantesController;
 use Illuminate\Foundation\Application;
@@ -148,12 +149,14 @@ Route::delete('/recursos-necesarios/{id}', [Etapa4Controller::class,'necesariosD
     Route::post('/alianzasclave/{id}', [Etapa4Controller::class, 'alianzasclaveupdate'])->name('alianzasclave.update');
     Route::delete('/alianzasclave/{id}', [Etapa4Controller::class, 'alianzasclavedestroy'])->name('alianzasclave.destroy');
 
-
+// In routes/web.php
+Route::get('/etapa9/{proyecto_id}', [Etapa9Controller::class, 'index'])->name('etapa9');
+Route::post('/etapa9', [Etapa9Controller::class, 'store'])->name('etapa9.store');
+Route::post('/etapa9/{etapa9}', [Etapa9Controller::class, 'update'])->name('etapa9.update');
 
     Route::get('/etapa5/{id}', [Etapas::class, 'etapa5'])->name('etapa5');
     Route::get('/etapa6/{id}', [Etapas::class, 'etapa6'])->name('etapa6');
     Route::get('/etapa8/{id}', [Etapas::class, 'etapa8'])->name('etapa8');
-    Route::get('/etapa9/{id}', [Etapas::class, 'etapa9'])->name('etapa9');
     Route::get('/etapa10/{id}', [Etapas::class, 'etapa10'])->name('etapa10');
 
 });
