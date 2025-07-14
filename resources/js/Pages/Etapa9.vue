@@ -109,27 +109,49 @@ function submit() {
   const url = isEditing.value
     ? route('etapa9.update', props.etapa9.id)
     : route('etapa9.store')
-  const method = isEditing.value ? 'put' : 'post'
 
-  form[method](url, {
-    forceFormData: true,
-    preserveScroll: true,
-    onSuccess: () => {
-      Swal.fire({
-        icon: 'success',
-        title: isEditing.value ? 'Actualizado' : 'Guardado',
-        text: isEditing.value
-          ? 'Video actualizado correctamente.'
-          : 'Video guardado correctamente.',
-        timer: 2000,
-        showConfirmButton: false,
-      })
-    },
-    onError: () => {
-      Swal.fire('Error', 'Hubo un problema al procesar el video.', 'error')
-    },
-  })
+  if (isEditing.value) {
+    // UPDATE: siempre POST + spoofing
+    form.post(url, {
+      data: { _method: 'PUT' },
+      forceFormData: true,
+      preserveScroll: true,
+      onSuccess: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Actualizado',
+          text: 'Video actualizado correctamente.',
+          timer: 2000,
+          showConfirmButton: false,
+        })
+      },
+      onError: errors => {
+        console.error(errors)
+        Swal.fire('Error', Object.values(errors).join('<br>'), 'error')
+      },
+    })
+  } else {
+    // CREATE: POST normal
+    form.post(url, {
+      forceFormData: true,
+      preserveScroll: true,
+      onSuccess: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Guardado',
+          text: 'Video guardado correctamente.',
+          timer: 2000,
+          showConfirmButton: false,
+        })
+      },
+      onError: errors => {
+        console.error(errors)
+        Swal.fire('Error', Object.values(errors).join('<br>'), 'error')
+      },
+    })
+  }
 }
+
 
 function handleFileChange(event) {
   const file = event.target.files[0]

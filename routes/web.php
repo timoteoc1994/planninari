@@ -149,10 +149,16 @@ Route::delete('/recursos-necesarios/{id}', [Etapa4Controller::class,'necesariosD
     Route::post('/alianzasclave/{id}', [Etapa4Controller::class, 'alianzasclaveupdate'])->name('alianzasclave.update');
     Route::delete('/alianzasclave/{id}', [Etapa4Controller::class, 'alianzasclavedestroy'])->name('alianzasclave.destroy');
 
-// In routes/web.php
+// En routes/web.php
 Route::get('/etapa9/{proyecto_id}', [Etapa9Controller::class, 'index'])->name('etapa9');
-Route::post('/etapa9', [Etapa9Controller::class, 'store'])->name('etapa9.store');
-Route::post('/etapa9/{etapa9}', [Etapa9Controller::class, 'update'])->name('etapa9.update');
+
+// Para crear
+Route::post('/etapa9', [Etapa9Controller::class, 'store'])
+     ->name('etapa9.store');
+
+// Para actualizar - usar el ID del registro etapa9, no del proyecto
+Route::post('/etapa9/{etapa9}', [Etapa9Controller::class, 'update'])
+     ->name('etapa9.update');
 
     Route::get('/etapa5/{id}', [Etapas::class, 'etapa5'])->name('etapa5');
     Route::get('/etapa6/{id}', [Etapas::class, 'etapa6'])->name('etapa6');

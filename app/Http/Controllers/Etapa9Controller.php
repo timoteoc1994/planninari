@@ -22,10 +22,10 @@ class Etapa9Controller extends Controller
 
     public function store(Request $request)
     {
-        // 1) Validación apuntando a la tabla correcta 'proyectos'
+        // 1) Validación apuntando a la tabla correcta 'projects'
         $validated = $request->validate([
             'proyecto_id' => 'required|integer|exists:projects,id',
-            'video'       => 'required|file|mimes:mp4,avi,mpeg|max:102400', // 100 MB
+            'video'       => 'required|file|mimes:mp4,avi,mpeg|max:102400', // 100 MB
         ]);
 
         // Añadimos el user_id
@@ -48,14 +48,18 @@ class Etapa9Controller extends Controller
 
     public function update(Request $request, Etapa9 $etapa9)
     {
-        // 1) Validación apuntando a la tabla correcta 'proyectos'
-        $data = $request->validate([
+        // 1) Validación
+        $validated = $request->validate([
             'proyecto_id' => 'required|integer|exists:projects,id',
             'video'       => 'nullable|file|mimes:mp4,avi,mpeg|max:102400',
         ]);
 
-        // 2) Si hay archivo nuevo, eliminamos el anterior y guardamos el nuevo
+        // Añadimos el user_id
+        $validated['user_id'] = Auth::id();
+
+        // 2) Si viene un video nuevo, borra el viejo y guarda el nuevo
         if ($request->hasFile('video')) {
+            // borrar anterior
             if ($etapa9->video_pitch_path
                 && Storage::disk('public')->exists($etapa9->video_pitch_path)
             ) {
@@ -64,13 +68,13 @@ class Etapa9Controller extends Controller
 
             $file     = $request->file('video');
             $filename = time().'_'.preg_replace('/\s+/', '_', $file->getClientOriginalName());
-            $etapa9->video_pitch_path = Storage::disk('public')
-                                              ->putFileAs('videos', $file, $filename);
+            // guarda en storage/app/public/videos usando storeAs para consistencia
+            $path = $file->storeAs('videos', $filename, 'public');
+            $validated['video_pitch_path'] = $path;
         }
 
-        // 3) Actualizamos proyecto_id
-        $etapa9->proyecto_id = $data['proyecto_id'];
-        $etapa9->save();
+        // 3) Actualiza el registro con los datos validados
+        $etapa9->update($validated);
 
         return redirect()->back()
                          ->with('success', 'Video actualizado correctamente.');
