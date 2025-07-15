@@ -5,6 +5,8 @@ use App\Http\Controllers\Etapa4Controller;
 use App\Http\Controllers\Etapa5Controller;
 use App\Http\Controllers\Etapa6Controller;
 use App\Http\Controllers\Etapa7Controller;
+use App\Http\Controllers\Etapa9Controller;
+use App\Http\Controllers\Etapa10Controller;
 use App\Http\Controllers\Etapas;
 use App\Http\Controllers\IntegrantesController;
 use Illuminate\Foundation\Application;
@@ -148,12 +150,32 @@ Route::delete('/recursos-necesarios/{id}', [Etapa4Controller::class,'necesariosD
     Route::post('/alianzasclave/{id}', [Etapa4Controller::class, 'alianzasclaveupdate'])->name('alianzasclave.update');
     Route::delete('/alianzasclave/{id}', [Etapa4Controller::class, 'alianzasclavedestroy'])->name('alianzasclave.destroy');
 
+// En routes/web.php
+Route::get('/etapa9/{proyecto_id}', [Etapa9Controller::class, 'index'])->name('etapa9');
+
+// Para crear
+Route::post('/etapa9', [Etapa9Controller::class, 'store'])
+     ->name('etapa9.store');
+
+// Para actualizar - usar el ID del registro etapa9, no del proyecto
+Route::post('/etapa9/{etapa9}', [Etapa9Controller::class, 'update'])
+     ->name('etapa9.update');
+     // Nueva ruta para borrar sólo el video
+Route::delete('/etapa9/{etapa9}/video',     [Etapa9Controller::class, 'destroyVideo'])
+     ->name('etapa9.destroyVideo');
+
+
+     // Etapa 10
+Route::get   ('/etapa10/{proyecto_id}',       [Etapa10Controller::class, 'index'])          ->name('etapa10');
+Route::post  ('/etapa10',                     [Etapa10Controller::class, 'store'])          ->name('etapa10.store');
+Route::post   ('/etapa10/{etapa10}',           [Etapa10Controller::class, 'update'])         ->name('etapa10.update');
+// eliminar un documento por posición en el array
+Route::delete('/etapa10/{etapa10}/document/{index}', [Etapa10Controller::class, 'destroyDocument'])
+                                                ->name('etapa10.destroyDocument');
 
 
     Route::get('/etapa5/{id}', [Etapas::class, 'etapa5'])->name('etapa5');
     Route::get('/etapa6/{id}', [Etapas::class, 'etapa6'])->name('etapa6');
     Route::get('/etapa8/{id}', [Etapas::class, 'etapa8'])->name('etapa8');
-    Route::get('/etapa9/{id}', [Etapas::class, 'etapa9'])->name('etapa9');
-    Route::get('/etapa10/{id}', [Etapas::class, 'etapa10'])->name('etapa10');
 
 });
