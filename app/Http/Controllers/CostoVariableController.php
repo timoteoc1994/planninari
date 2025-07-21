@@ -85,44 +85,50 @@ $pctMargen = max(0, min(100, $pctMargen));
         return redirect()->route('costovariable.index', ['id' => $proyectoId]);
     }
 
-    public function update(Request $request, $proyectoId, CostoVariable $registro)
-    {
-        $data = $request->validate([
-            'ref'           => 'required|string',
-            'unidad'        => 'nullable|string',
-            'unidades_mes'  => 'required|numeric',
-        ]);
+public function update(Request $request, $proyectoId, CostoVariable $registro)
+{
+    $data = $request->validate([
+        'ref'           => 'required|string',
+        'unidad'        => 'nullable|string',
+        'unidades_mes'  => 'required|numeric',
+    ]);
 
-        $receta    = RecetaEstandar::where('proyecto_id', $proyectoId)
-                       ->where('user_id', Auth::id())
-                       ->where('ref', $data['ref'])
-                       ->firstOrFail();
-        $ventaUnit = $receta->precio_venta;
+    $receta    = RecetaEstandar::where('proyecto_id', $proyectoId)
+                   ->where('user_id', Auth::id())
+                   ->where('ref', $data['ref'])
+                   ->firstOrFail();
 
-        $costoUnit = MaterialInsumo::where('proyecto_id', $proyectoId)
-                       ->where('user_id', Auth::id())
-                       ->where('ref', $data['ref'])
-                       ->sum('valor_usd');
+    $ventaUnit = $receta->precio_venta;
 
-        $totalCosto = $data['unidades_mes'] * $costoUnit;
-        $totalVenta = $data['unidades_mes'] * $ventaUnit;
-        $pctCosto   = $totalVenta ? round(($totalCosto / $totalVenta) * 100) : 0;
-        $pctMargen  = 100 - $pctCosto;
+    $costoUnit = MaterialInsumo::where('proyecto_id', $proyectoId)
+                   ->where('user_id', Auth::id())
+                   ->where('ref', $data['ref'])
+                   ->sum('valor_usd');
 
-        $registro->update([
-            'ref'               => $data['ref'],
-            'unidad'            => $data['unidad'] ?? null,
-            'unidades_mes'      => $data['unidades_mes'],
-            'costo_unitario'    => $costoUnit,
-            'venta_unitario'    => $ventaUnit,
-            'total_costo'       => $totalCosto,
-            'total_venta'       => $totalVenta,
-            'pct_costo_venta'   => $pctCosto,
-            'pct_margen'        => $pctMargen,
-        ]);
+    $totalCosto = $data['unidades_mes'] * $costoUnit;
+    $totalVenta = $data['unidades_mes'] * $ventaUnit;
 
-        return redirect()->route('costovariable.index', ['id' => $proyectoId]);
-    }
+    // Cálculo con límites seguros
+    $pctCosto = $totalVenta > 0 ? round(($totalCosto / $totalVenta) * 100) : 0;
+    $pctCosto = max(0, min(100, $pctCosto));
+
+    $pctMargen = 100 - $pctCosto;
+    $pctMargen = max(0, min(100, $pctMargen));
+
+    $registro->update([
+        'ref'               => $data['ref'],
+        'unidad'            => $data['unidad'] ?? null,
+        'unidades_mes'      => $data['unidades_mes'],
+        'costo_unitario'    => $costoUnit,
+        'venta_unitario'    => $ventaUnit,
+        'total_costo'       => $totalCosto,
+        'total_venta'       => $totalVenta,
+        'pct_costo_venta'   => $pctCosto,
+        'pct_margen'        => $pctMargen,
+    ]);
+
+    return redirect()->route('costovariable.index', ['id' => $proyectoId]);
+}
 
     public function destroy($proyectoId, CostoVariable $registro)
     {

@@ -181,14 +181,27 @@ const createForm = useForm({
     precio_venta: '',
 })
 function openCreateModal() {
-    createForm.reset()
-    createForm.clearErrors()
-    showCreateModal.value = true
+  createForm.reset()
+  createForm.clearErrors()
+
+  // fuerza todos los campos a vacío
+  createForm.nombre_producto = ''
+  createForm.detalle         = ''
+  createForm.presentacion    = ''
+  createForm.precio_venta    = ''
+
+  showCreateModal.value = true
 }
 function closeCreateModal() {
-    showCreateModal.value = false
-    createForm.reset()
-    createForm.clearErrors()
+  showCreateModal.value = false
+
+  // opcional: vuelve a limpiar al cerrar
+  createForm.reset()
+  createForm.clearErrors()
+  createForm.nombre_producto = ''
+  createForm.detalle         = ''
+  createForm.presentacion    = ''
+  createForm.precio_venta    = ''
 }
 function submitCreate() {
     createForm.post(route('recetaestandar.store', { id: proyecto_id }), {
@@ -209,20 +222,30 @@ const editForm = useForm({
     precio_venta: '',
 })
 function openEditModal(product) {
-    selectedProduct.value = product
-    editForm.reset()
-    editForm.clearErrors()
-    editForm.nombre_producto = product.nombre_producto
-    editForm.detalle = product.detalle
-    editForm.presentacion = product.presentacion
-    editForm.precio_venta = product.precio_venta
-    showEditModal.value = true
+  selectedProduct.value = product
+
+  editForm.reset()
+  editForm.clearErrors()
+
+  // carga campos desde el producto
+  editForm.nombre_producto = product.nombre_producto
+  editForm.detalle         = product.detalle
+  editForm.presentacion    = product.presentacion
+  editForm.precio_venta    = product.precio_venta
+
+  showEditModal.value = true
 }
 function closeEditModal() {
-    showEditModal.value = false
-    selectedProduct.value = null
-    editForm.reset()
-    editForm.clearErrors()
+  showEditModal.value    = false
+  selectedProduct.value  = null
+
+  // limpia el form al cerrar
+  editForm.reset()
+  editForm.clearErrors()
+  editForm.nombre_producto = ''
+  editForm.detalle         = ''
+  editForm.presentacion    = ''
+  editForm.precio_venta    = ''
 }
 function submitEdit() {
     editForm.put(

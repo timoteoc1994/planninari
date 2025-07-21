@@ -9,9 +9,13 @@
         </template>
 
         <div class="py-8 max-w-6xl mx-auto space-y-6">
-            <div class="flex justify-end">
-                <button @click="openCreateModal" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                    + Nuevo Registro
+            <!-- Buscador + Nuevo -->
+            <div class="flex items-center gap-4">
+                <input v-model="search" type="text" placeholder="Buscar "
+                    class="border w-full rounded p-2 flex-grow focus:outline-none focus:ring" />
+                <button @click="openCreateModal"
+                    class="px-4 py-2 bg-green-600 text-white rounded shadow hover:bg-green-700 transition">
+                    Crear
                 </button>
             </div>
 
@@ -33,7 +37,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="r in registros" :key="r.id" class="border-t hover:bg-gray-50">
+                        <tr v-for="r in filteredRegistros" :key="r.id" class="border-t hover:bg-gray-50">
                             <td class="px-4 py-2">{{ r.ref }} – {{ recetaNombre[r.ref] }}</td>
                             <td class="px-4 py-2">{{ r.unidad || recetaUnidad[r.ref] }}</td>
                             <td class="px-4 py-2">{{ r.unidades_mes }}</td>
@@ -43,7 +47,9 @@
                             <td class="px-4 py-2">${{ Number(r.total_venta).toFixed(2) }}</td>
                             <td class="px-4 py-2">{{ r.pct_costo_venta }}%</td>
                             <td class="px-4 py-2">{{ r.pct_margen }}%</td>
-                            <td class="px-4 py-2">{{ r.pct_participacion }}%</td>
+                             <td class="px-4 py-2">
+   {{ Number((r.total_venta / totales.ventaTotal) * 100).toFixed(0) }}%
+ </td>
                             <td class="px-4 py-2">
                                 <div class="flex space-x-2">
                                     <button @click="openEditModal(r)"
@@ -200,6 +206,18 @@ const recetaUnidad = Object.fromEntries(
 )
 const costoInsumo = props.costosInsumos
 
+// búsqueda
+const search = ref('')
+
+// registros filtrados por REF o nombre
+const filteredRegistros = computed(() => {
+  const term = search.value.toLowerCase().trim()
+  return props.registros.filter(r => {
+    const nombre = (recetaNombre[r.ref] || '').toLowerCase()
+    return r.ref.toLowerCase().includes(term) || nombre.includes(term)
+  })
+})
+
 // Cálculo global de totales
 const totales = computed(() => {
     const sumUn = props.registros.reduce((s, r) => s + r.unidades_mes, 0)
@@ -226,11 +244,23 @@ const isEditing = ref(false)
 const editingId = ref(null)
 
 function openCreateModal() {
-    form.reset()
-    form.clearErrors()
-    isEditing.value = false
-    showModal.value = true
+  // 1) Reset Inertia Form a sus valores iniciales
+  form.reset()
+  form.clearErrors()
+
+  // 2) Limpia todos los campos explícitamente
+  form.ref           = ''
+  form.unidad        = ''
+  form.unidades_mes  = ''
+
+  // 3) Asegura que no haya ningún registro en edición
+  editingId.value    = null
+  isEditing.value    = false
+
+  // 4) Abre el modal
+  showModal.value    = true
 }
+
 
 function openEditModal(r) {
     editingId.value = r.id

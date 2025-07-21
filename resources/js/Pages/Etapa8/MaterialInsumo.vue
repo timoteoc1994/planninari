@@ -223,10 +223,24 @@ const showEditModal = ref(false)
 const editingId = ref(null)
 
 function openCreateModal() {
+    // 1) Resetea el form a valores iniciales
     form.reset()
     form.clearErrors()
+
+    // 2) Asegura que no queden valores previos
+    form.ref         = ''
+    form.ingrediente = ''
+    form.descripcion = ''
+    form.peso_g      = ''
+    form.valor_usd   = ''
+
+    // 3) Limpia cualquier editingId por si acaso
+    editingId.value  = null
+
+    // 4) Abre el modal
     showCreateModal.value = true
 }
+
 function closeCreateModal() {
     showCreateModal.value = false
 }
