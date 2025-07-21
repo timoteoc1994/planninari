@@ -8,6 +8,7 @@ use App\Http\Controllers\Etapa7Controller;
 use App\Http\Controllers\Etapa8Controller; 
 use App\Http\Controllers\RecetaEstandarController;
 use App\Http\Controllers\MaterialInsumoController;
+use App\Http\Controllers\CostoVariableController;
 use App\Http\Controllers\Etapa9Controller;
 use App\Http\Controllers\Etapa10Controller;
 use App\Http\Controllers\Etapas;
@@ -228,6 +229,30 @@ Route::put('/proyecto/{id}/material-insumos/{materialinsumo}',
 Route::delete('/proyecto/{id}/material-insumos/{materialinsumo}', 
     [MaterialInsumoController::class, 'destroy'])
     ->name('materialinsumo.destroy');
+
+
+
+
+    // Costo Variable – Estimación de ventas
+Route::get(
+    '/proyecto/{id}/costo-variable',
+    [CostoVariableController::class, 'index']
+)->name('costovariable.index');
+
+Route::post(
+    '/proyecto/{id}/costo-variable',
+    [CostoVariableController::class, 'store']
+)->name('costovariable.store');
+
+Route::put(
+    '/proyecto/{id}/costo-variable/{registro}',
+    [CostoVariableController::class, 'update']
+)->name('costovariable.update');
+
+Route::delete(
+    '/proyecto/{id}/costo-variable/{registro}',
+    [CostoVariableController::class, 'destroy']
+)->name('costovariable.destroy');
 
 
 });
