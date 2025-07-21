@@ -9,8 +9,7 @@
 
         <div class="py-8 max-w-4xl mx-auto space-y-6">
             <!-- Buscador + Nuevo -->
-
-             <div class="flex items-center gap-4">
+            <div class="flex items-center gap-4">
                 <input v-model="search" type="text" placeholder="Buscar por REF o ingrediente..."
                     class="border w-full rounded p-2 flex-grow focus:outline-none focus:ring" />
                 <button @click="openCreateModal"
@@ -25,7 +24,8 @@
                     <h3 class="text-lg font-semibold text-gray-700 text-center mt-6">
                         Insumos para {{ ref }}
                     </h3>
-                    <div class="overflow-x-auto">
+
+                    <div class="overflow-x-auto rounded-xl border-2">
                         <table class="w-full bg-white rounded shadow mx-auto">
                             <thead class="bg-gray-100">
                                 <tr>
@@ -40,7 +40,9 @@
                                 <tr v-for="i in items" :key="i.id" class="border-t hover:bg-gray-50">
                                     <td class="px-4 py-2">{{ i.ingrediente }}</td>
                                     <td class="px-4 py-2">{{ i.descripcion }}</td>
-                                    <td class="px-4 py-2">{{ i.peso_g }}</td>
+                                    <td class="px-4 py-2">
+                                        {{ i.peso_g || '—' }}
+                                    </td>
                                     <td class="px-4 py-2">{{ i.valor_usd }}</td>
                                     <td class="px-4 py-2 space-x-2">
                                         <button @click="openEditModal(i)"
@@ -53,11 +55,19 @@
                                         </button>
                                     </td>
                                 </tr>
+                                <tr class="border-t font-semibold bg-gray-200">
+                                    <td class="px-4 py-2 text-left">Subtotal:</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="px-4 py-2">${{ groupSubtotals[ref].toFixed(2) }}</td>
+                                    <td></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+
             <div v-else class="text-center text-gray-500">
                 No se encontraron insumos.
             </div>
@@ -90,9 +100,8 @@
                         <textarea v-model="form.descripcion" class="w-full border rounded p-2" rows="2"></textarea>
                     </div>
                     <div>
-                        <label class="block text-sm">Peso (g) *</label>
-                        <input v-model="form.peso_g" type="number" step="0.01" required
-                            class="w-full border rounded p-2" />
+                        <label class="block text-sm">Peso (g)</label>
+                        <input v-model="form.peso_g" type="number" step="0.01" class="w-full border rounded p-2" />
                     </div>
                     <div>
                         <label class="block text-sm">Valor (USD) *</label>
@@ -140,9 +149,8 @@
                         <textarea v-model="form.descripcion" class="w-full border rounded p-2" rows="2"></textarea>
                     </div>
                     <div>
-                        <label class="block text-sm">Peso (g) *</label>
-                        <input v-model="form.peso_g" type="number" step="0.01" required
-                            class="w-full border rounded p-2" />
+                        <label class="block text-sm">Peso (g)</label>
+                        <input v-model="form.peso_g" type="number" step="0.01" class="w-full border rounded p-2" />
                     </div>
                     <div>
                         <label class="block text-sm">Valor (USD) *</label>
@@ -195,6 +203,14 @@ const groupedInsumos = computed(() => {
     return Object.entries(groups)
 })
 
+const groupSubtotals = computed(() => {
+    const subs = {}
+    filteredInsumos.value.forEach(i => {
+        subs[i.ref] = (subs[i.ref] || 0) + (parseFloat(i.valor_usd) || 0)
+    })
+    return subs
+})
+
 const form = useForm({
     ref: '',
     ingrediente: '',
@@ -229,7 +245,6 @@ function submitCreate() {
 
 function openEditModal(item) {
     editingId.value = item.id
-    // asignación directa en lugar de form.fill()
     form.ref = item.ref
     form.ingrediente = item.ingrediente
     form.descripcion = item.descripcion
