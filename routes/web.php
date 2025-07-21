@@ -7,6 +7,7 @@ use App\Http\Controllers\Etapa6Controller;
 use App\Http\Controllers\Etapa7Controller;
 use App\Http\Controllers\Etapa8Controller; 
 use App\Http\Controllers\RecetaEstandarController;
+use App\Http\Controllers\MaterialInsumoController;
 use App\Http\Controllers\Etapa9Controller;
 use App\Http\Controllers\Etapa10Controller;
 use App\Http\Controllers\Etapas;
@@ -209,5 +210,24 @@ Route::delete('/etapa10/{etapa10}/document/{index}', [Etapa10Controller::class, 
     Route::delete('/proyecto/{id}/receta-estandar/{recetaestandar}', 
         [RecetaEstandarController::class, 'destroy'])
         ->name('recetaestandar.destroy');
+
+
+        // Materiales e Insumos – Precio de Compra
+Route::get('/proyecto/{id}/material-insumos', 
+    [MaterialInsumoController::class, 'index'])
+    ->name('materialinsumo.index');
+
+Route::post('/proyecto/{id}/material-insumos', 
+    [MaterialInsumoController::class, 'store'])
+    ->name('materialinsumo.store');
+
+Route::put('/proyecto/{id}/material-insumos/{materialinsumo}', 
+    [MaterialInsumoController::class, 'update'])
+    ->name('materialinsumo.update');
+
+Route::delete('/proyecto/{id}/material-insumos/{materialinsumo}', 
+    [MaterialInsumoController::class, 'destroy'])
+    ->name('materialinsumo.destroy');
+
 
 });
