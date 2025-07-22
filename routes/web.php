@@ -12,6 +12,7 @@ use App\Http\Controllers\CostoVariableController;
 use App\Http\Controllers\CostoFijoController;
 use App\Http\Controllers\PagoMensualController;
 use App\Http\Controllers\EmpleadoController;
+use App\Http\Controllers\PuntoEquilibrioController;
 use App\Http\Controllers\Etapa9Controller;
 use App\Http\Controllers\Etapa10Controller;
 use App\Http\Controllers\Etapas;
