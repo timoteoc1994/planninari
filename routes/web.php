@@ -9,6 +9,7 @@ use App\Http\Controllers\Etapa8Controller;
 use App\Http\Controllers\RecetaEstandarController;
 use App\Http\Controllers\MaterialInsumoController;
 use App\Http\Controllers\CostoVariableController;
+use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\Etapa9Controller;
 use App\Http\Controllers\Etapa10Controller;
 use App\Http\Controllers\Etapas;
@@ -253,6 +254,14 @@ Route::delete(
     '/proyecto/{id}/costo-variable/{registro}',
     [CostoVariableController::class, 'destroy']
 )->name('costovariable.destroy');
+
+
+// routes/web.php
+Route::prefix('proyecto/{id}')->group(function(){
+    Route::resource('empleados', EmpleadoController::class)
+         ->except(['show','create','edit'])
+         ->names('empleados');
+});
 
 
 });

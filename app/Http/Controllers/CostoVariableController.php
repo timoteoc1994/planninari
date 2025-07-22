@@ -65,7 +65,7 @@ class CostoVariableController extends Controller
         $pctMargen  = 100 - $pctCosto;
 
         $pctCosto  = max(0, min(100, $pctCosto));
-$pctMargen = max(0, min(100, $pctMargen));
+        $pctMargen = max(0, min(100, $pctMargen));
 
         CostoVariable::create([
             'proyecto_id'       => $proyectoId,
