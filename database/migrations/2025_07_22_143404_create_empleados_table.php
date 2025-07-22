@@ -10,8 +10,12 @@ return new class extends Migration {
     {
         Schema::create('empleados', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('proyecto_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('proyecto_id')
+              ->constrained('projects')
+              ->onDelete('cascade');
+            $table->foreignId('user_id')
+              ->constrained('users')
+              ->onDelete('cascade');
             $table->string('nombre');
             $table->decimal('salario_nominal', 12, 2);
             $table->decimal('beneficios_pct', 5, 2);

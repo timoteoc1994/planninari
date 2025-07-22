@@ -10,8 +10,12 @@ class CreateCostoVariablesTable extends Migration
     {
         Schema::create('costo_variables', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('proyecto_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('proyecto_id')
+              ->constrained('projects')
+              ->onDelete('cascade');
+            $table->foreignId('user_id')
+              ->constrained('users')
+              ->onDelete('cascade');
             $table->string('ref', 10);
             $table->string('unidad')->nullable();
             $table->unsignedInteger('unidades_mes');

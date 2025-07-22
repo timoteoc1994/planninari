@@ -13,11 +13,11 @@ class CreateEtapa8Table extends Migration
         Schema::create('etapa8', function (Blueprint $table) {
             $table->id();
             $table->foreignId('proyecto_id')
-                  ->constrained()
-                  ->onDelete('cascade');
+              ->constrained('projects')
+              ->onDelete('cascade');
             $table->foreignId('user_id')
-                  ->constrained()
-                  ->onDelete('cascade');
+              ->constrained('users')
+              ->onDelete('cascade');
             $table->json('data')->nullable();  // Almacena datos específicos de la etapa
             $table->timestamps();
         });

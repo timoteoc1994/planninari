@@ -13,11 +13,11 @@ class CreateRecetaEstandarsTable extends Migration
         Schema::create('receta_estandars', function (Blueprint $table) {
             $table->id();
             $table->foreignId('proyecto_id')
-                  ->constrained()
-                  ->onDelete('cascade');
+              ->constrained('projects')
+                ->onDelete('cascade');
             $table->foreignId('user_id')
-                  ->constrained()
-                  ->onDelete('cascade');
+              ->constrained('users')
+              ->onDelete('cascade');
 
             // LISTADO DE PRODUCTOS DESARROLLADOS
             $table->string('ref', 10);
