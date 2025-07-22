@@ -71,6 +71,31 @@ const props = defineProps({
                         </Link>
                     </div>
 
+                     <div
+                        class="bg-white rounded-lg shadow p-6 flex flex-col items-center hover:shadow-lg transition-shadow">
+                        <h3 class="text-lg font-bold mb-4 text-gray-700 text-center">
+                            Costos fijos
+                        </h3>
+                        <Link :href="route('costos-fijos.index', { id: props.proyecto_id })">
+                        <button class="mt-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                            Llenar
+                        </button>
+                        </Link>
+                    </div>
+
+
+                     <div
+                        class="bg-white rounded-lg shadow p-6 flex flex-col items-center hover:shadow-lg transition-shadow">
+                        <h3 class="text-lg font-bold mb-4 text-gray-700 text-center">
+                            Pagos Mensuales
+                        </h3>
+                        <Link :href="route('pagos-mensuales.index', { id: props.proyecto_id })">
+                        <button class="mt-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                            Llenar
+                        </button>
+                        </Link>
+                    </div>
+
                     <div
                         class="bg-white rounded-lg shadow p-6 flex flex-col items-center hover:shadow-lg transition-shadow">
                         <h3 class="text-lg font-bold mb-4 text-gray-700 text-center">

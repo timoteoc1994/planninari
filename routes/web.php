@@ -8,7 +8,9 @@ use App\Http\Controllers\Etapa7Controller;
 use App\Http\Controllers\Etapa8Controller; 
 use App\Http\Controllers\RecetaEstandarController;
 use App\Http\Controllers\MaterialInsumoController;
-use App\Http\Controllers\CostoVariableController;
+use App\Http\Controllers\CostoVariableController;  
+use App\Http\Controllers\CostoFijoController;
+use App\Http\Controllers\PagoMensualController;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\Etapa9Controller;
 use App\Http\Controllers\Etapa10Controller;
@@ -261,6 +263,14 @@ Route::prefix('proyecto/{id}')->group(function(){
     Route::resource('empleados', EmpleadoController::class)
          ->except(['show','create','edit'])
          ->names('empleados');
+});
+
+
+Route::prefix('proyecto/{id}')->group(function(){
+    Route::resource('costos-fijos', CostoFijoController::class)
+         ->parameters(['costos-fijos' => 'costo_fijo']);
+    Route::resource('pagos-mensuales', PagoMensualController::class)
+         ->parameters(['pagos-mensuales' => 'pago_mensual']);
 });
 
 
