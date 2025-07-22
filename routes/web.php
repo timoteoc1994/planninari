@@ -274,4 +274,7 @@ Route::prefix('proyecto/{id}')->group(function(){
 });
 
 
+   Route::get    ('proyecto/{id}/punto-equilibrio', [PuntoEquilibrioController::class, 'index'])->name('punto-equilibrio.index');
+Route::put    ('proyecto/{id}/punto-equilibrio/{punto_equilibrio}', [PuntoEquilibrioController::class, 'update'])->name('punto-equilibrio.update');
+
 });
