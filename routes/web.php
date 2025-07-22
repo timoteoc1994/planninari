@@ -5,6 +5,13 @@ use App\Http\Controllers\Etapa4Controller;
 use App\Http\Controllers\Etapa5Controller;
 use App\Http\Controllers\Etapa6Controller;
 use App\Http\Controllers\Etapa7Controller;
+use App\Http\Controllers\Etapa8Controller; 
+use App\Http\Controllers\RecetaEstandarController;
+use App\Http\Controllers\MaterialInsumoController;
+use App\Http\Controllers\CostoVariableController;  
+use App\Http\Controllers\CostoFijoController;
+use App\Http\Controllers\PagoMensualController;
+use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\Etapa9Controller;
 use App\Http\Controllers\Etapa10Controller;
 use App\Http\Controllers\Etapas;
@@ -176,6 +183,95 @@ Route::delete('/etapa10/{etapa10}/document/{index}', [Etapa10Controller::class, 
 
     Route::get('/etapa5/{id}', [Etapas::class, 'etapa5'])->name('etapa5');
     Route::get('/etapa6/{id}', [Etapas::class, 'etapa6'])->name('etapa6');
-    Route::get('/etapa8/{id}', [Etapas::class, 'etapa8'])->name('etapa8');
+        Route::get('/etapa8/{id}', [Etapa8Controller::class, 'index'])->name('etapa8');
+           // Etapa 8 → Receta Estándar: Listado de Productos Desarrollados
+      // Etapa 8 → Receta Estándar: Listado de Productos Desarrollados
+    Route::get('/proyecto/{id}/receta-estandar', 
+        [RecetaEstandarController::class, 'index'])
+        ->name('recetaestandar.index');
+
+    // (abrir modal, realmente redirige al índice)
+    Route::get('/proyecto/{id}/receta-estandar/create', 
+        [RecetaEstandarController::class, 'create'])
+        ->name('recetaestandar.create');
+
+    Route::post('/proyecto/{id}/receta-estandar', 
+        [RecetaEstandarController::class, 'store'])
+        ->name('recetaestandar.store');
+
+    Route::get('/proyecto/{id}/receta-estandar/{recetaestandar}', 
+        [RecetaEstandarController::class, 'show'])
+        ->name('recetaestandar.show');
+
+    Route::get('/proyecto/{id}/receta-estandar/{recetaestandar}/edit', 
+        [RecetaEstandarController::class, 'edit'])
+        ->name('recetaestandar.edit');
+
+    Route::put('/proyecto/{id}/receta-estandar/{recetaestandar}', 
+        [RecetaEstandarController::class, 'update'])
+        ->name('recetaestandar.update');
+
+    Route::delete('/proyecto/{id}/receta-estandar/{recetaestandar}', 
+        [RecetaEstandarController::class, 'destroy'])
+        ->name('recetaestandar.destroy');
+
+
+        // Materiales e Insumos – Precio de Compra
+Route::get('/proyecto/{id}/material-insumos', 
+    [MaterialInsumoController::class, 'index'])
+    ->name('materialinsumo.index');
+
+Route::post('/proyecto/{id}/material-insumos', 
+    [MaterialInsumoController::class, 'store'])
+    ->name('materialinsumo.store');
+
+Route::put('/proyecto/{id}/material-insumos/{materialinsumo}', 
+    [MaterialInsumoController::class, 'update'])
+    ->name('materialinsumo.update');
+
+Route::delete('/proyecto/{id}/material-insumos/{materialinsumo}', 
+    [MaterialInsumoController::class, 'destroy'])
+    ->name('materialinsumo.destroy');
+
+
+
+
+    // Costo Variable – Estimación de ventas
+Route::get(
+    '/proyecto/{id}/costo-variable',
+    [CostoVariableController::class, 'index']
+)->name('costovariable.index');
+
+Route::post(
+    '/proyecto/{id}/costo-variable',
+    [CostoVariableController::class, 'store']
+)->name('costovariable.store');
+
+Route::put(
+    '/proyecto/{id}/costo-variable/{registro}',
+    [CostoVariableController::class, 'update']
+)->name('costovariable.update');
+
+Route::delete(
+    '/proyecto/{id}/costo-variable/{registro}',
+    [CostoVariableController::class, 'destroy']
+)->name('costovariable.destroy');
+
+
+// routes/web.php
+Route::prefix('proyecto/{id}')->group(function(){
+    Route::resource('empleados', EmpleadoController::class)
+         ->except(['show','create','edit'])
+         ->names('empleados');
+});
+
+
+Route::prefix('proyecto/{id}')->group(function(){
+    Route::resource('costos-fijos', CostoFijoController::class)
+         ->parameters(['costos-fijos' => 'costo_fijo']);
+    Route::resource('pagos-mensuales', PagoMensualController::class)
+         ->parameters(['pagos-mensuales' => 'pago_mensual']);
+});
+
 
 });
