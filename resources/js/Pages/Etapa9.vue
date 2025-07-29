@@ -1,91 +1,132 @@
 <template>
   <AppLayout title="Etapa 9">
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Etapa 9 – {{ isEditing ? 'Editar' : 'Subir' }} Pitch de Presentación
-      </h2>
-    </template>
-
-    <div class="py-12">
-      <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 bg-white p-8 rounded shadow">
-        <form @submit.prevent="submit" enctype="multipart/form-data">
-          <div class="w-full h-52 bg-gray-200 flex flex-col justify-center items-center rounded mb-4">
-            <p class="text-lg font-semibold">AGREGAR VIDEO</p>
-            <input
-              type="file"
-              name="video"
-              accept="video/mp4,video/avi,video/mpeg"
-              @change="handleFileChange"
-              :disabled="form.processing"
-              class="mt-2"
-            />
-            <p v-if="form.errors.video" class="mt-2 text-sm text-red-600">
-              {{ form.errors.video }}
-            </p>
-
-            <!-- Vista previa del video seleccionado -->
-            <div v-else-if="previewUrl" class="mt-4 w-full flex flex-col items-center">
-              <video
-                :src="previewUrl"
-                controls
-                class="max-h-40 rounded"
-              ></video>
-              <p class="mt-2 text-sm text-green-600">
-                Vista previa: {{ form.video.name }}
-              </p>
+      <div class="bg-gradient-to-r from-cyan-600 to-cyan-400 py-8">
+        <div class="max-w-4xl mx-auto px-4">
+          <nav class="flex items-center space-x-2 text-cyan-100 mb-4">
+            <Link class="hover:text-white transition-colors" :href="route('projects.stages.show', proyectoactual.id)">
+              {{ proyectoactual.name }}
+            </Link>
+            <span>/</span>
+            <span class="text-white font-medium">Etapa 9</span>
+          </nav>
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-white font-bold text-lg">
+              9
             </div>
-
-            <!-- Archivo seleccionado sin vista previa -->
-            <p v-else-if="form.video" class="mt-2 text-sm text-green-600">
-              Archivo seleccionado: {{ form.video.name }}
-            </p>
-
-            <!-- Video guardado y opciones -->
-            <div v-if="isEditing && etapa9.video_pitch_path" class="mt-4 text-sm text-gray-600 flex flex-col items-center">
-              <p>Video actual:</p>
-              <a
-                :href="`/storage/${etapa9.video_pitch_path}`"
-                class="underline text-blue-600"
-                target="_blank"
-              >
-                Ver video
-              </a>
-              <button
-  type="button"
-  @click="deleteVideo()"
-  class="mt-2 text-red-600 hover:underline"
-  :disabled="form.processing"
->
-  Eliminar video
-</button>
-
+            <div>
+              <h2 class="font-bold text-3xl text-white leading-tight">
+                Pitch de Presentación
+              </h2>
+              <p class="text-cyan-100 mt-1">Sube y gestiona el video de presentación de tu proyecto</p>
             </div>
           </div>
+        </div>
+      </div>
+    </template>
 
-          <p class="text-sm text-gray-700 mb-4">
-            Para el Pitch de Negocio deberá presentar un video que responda a:<br />
-            ¿Por qué su emprendimiento debería ser beneficiario del Fondo de Capital Semilla?
-          </p>
-          <ul class="text-sm text-gray-700 list-disc list-inside mb-6">
-            <li>Problema–Solución del emprendimiento</li>
-            <li>Valor agregado</li>
-            <li>Conocimiento sobre el emprendimiento</li>
-            <li>Experiencia como emprendedor(a)</li>
-            <li>Principales lecciones aprendidas en el desarrollo</li>
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 to-cyan-50 py-12">
+      <div class="max-w-4xl mx-auto px-4">
+        <!-- Panel educativo -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8 border-l-4 border-cyan-500">
+          <div class="flex items-center mb-4">
+            <svg class="w-7 h-7 mr-3 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A2 2 0 0020 6.382V5a2 2 0 00-2-2H6a2 2 0 00-2 2v1.382a2 2 0 00.447 1.342L9 10m6 0v4m0 0l-3 3m3-3l3 3" />
+            </svg>
+            <h3 class="text-xl font-bold text-cyan-800">¿Por qué es importante el Pitch?</h3>
+          </div>
+          <p class="text-gray-700 mb-2">El Pitch de Negocio es tu oportunidad para convencer al jurado sobre el potencial de tu emprendimiento. Presenta tu propuesta de valor, experiencia y visión.</p>
+          <ul class="list-disc pl-6 text-sm text-gray-600 space-y-1">
+            <li>Expón el problema y la solución que ofrece tu proyecto.</li>
+            <li>Destaca el valor agregado y tu experiencia como emprendedor(a).</li>
+            <li>Comparte las lecciones aprendidas y tu motivación.</li>
           </ul>
+        </div>
 
-          <button
-            type="submit"
-            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-            :disabled="form.processing"
-          >
-            {{ form.processing
-              ? 'Procesando...'
-              : isEditing
-                ? 'Actualizar'
-                : 'Guardar' }}
-          </button>
-        </form>
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+          <form @submit.prevent="submit" enctype="multipart/form-data">
+            <div class="w-full flex flex-col items-center">
+              <!-- Si hay video guardado, mostrar reproductor y botón eliminar -->
+              <div v-if="isEditing && etapa9.video_pitch_path" class="w-full flex flex-col items-center mb-6">
+                <video
+                  :src="`/storage/${etapa9.video_pitch_path}`"
+                  controls
+                  class="max-h-52 rounded shadow mb-2 w-full"
+                ></video>
+                <button
+                  type="button"
+                  @click="deleteVideo()"
+                  class="modern-btn-red"
+                  :disabled="form.processing"
+                >
+                  Eliminar video
+                </button>
+              </div>
+
+              <!-- Si NO hay video guardado, mostrar input para subir -->
+              <div v-else>
+                <svg class="w-12 h-12 text-cyan-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A2 2 0 0020 6.382V5a2 2 0 00-2-2H6a2 2 0 00-2 2v1.382a2 2 0 00.447 1.342L9 10m6 0v4m0 0l-3 3m3-3l3 3" />
+                </svg>
+                <p class="text-lg font-semibold text-cyan-700">Agregar Video Pitch</p>
+                <input
+                  type="file"
+                  name="video"
+                  accept="video/mp4,video/avi,video/mpeg"
+                  @change="handleFileChange"
+                  :disabled="form.processing"
+                  class="mt-2 modern-input-cyan"
+                />
+                <p v-if="form.errors.video" class="mt-2 text-sm text-red-600">
+                  {{ form.errors.video }}
+                </p>
+
+                <!-- Vista previa del video seleccionado -->
+                <div v-if="previewUrl" class="mt-4 w-full flex flex-col items-center">
+                  <video
+                    :src="previewUrl"
+                    controls
+                    class="max-h-40 rounded shadow w-full"
+                  ></video>
+                  <p class="mt-2 text-sm text-green-600">
+                    Vista previa: {{ form.video.name }}
+                  </p>
+                </div>
+
+                <!-- Archivo seleccionado sin vista previa -->
+                <p v-else-if="form.video" class="mt-2 text-sm text-green-600">
+                  Archivo seleccionado: {{ form.video.name }}
+                </p>
+              </div>
+            </div>
+
+            <p class="text-sm text-gray-700 mb-4 mt-6">
+              Para el Pitch de Negocio deberá presentar un video que responda a:<br />
+              ¿Por qué su emprendimiento debería ser beneficiario del Fondo de Capital Semilla?
+            </p>
+            <ul class="text-sm text-gray-700 list-disc list-inside mb-6">
+              <li>Problema–Solución del emprendimiento</li>
+              <li>Valor agregado</li>
+              <li>Conocimiento sobre el emprendimiento</li>
+              <li>Experiencia como emprendedor(a)</li>
+              <li>Principales lecciones aprendidas en el desarrollo</li>
+            </ul>
+
+            <button
+              type="submit"
+              class="modern-btn-cyan"
+              :disabled="form.processing || (isEditing && etapa9.video_pitch_path)"
+            >
+              {{ form.processing
+                ? 'Procesando...'
+                : isEditing && etapa9.video_pitch_path
+                  ? 'Video ya subido'
+                  : isEditing
+                    ? 'Actualizar'
+                    : 'Guardar' }}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   </AppLayout>
@@ -93,7 +134,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useForm } from '@inertiajs/vue3'
+import { useForm, Link } from '@inertiajs/vue3'
 import { route } from 'ziggy-js'
 import Swal from 'sweetalert2'
 import AppLayout from '@/Layouts/AppLayout.vue'
@@ -101,6 +142,7 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 const props = defineProps({
   etapa9: Object,
   proyecto_id: Number,
+  proyectoactual: Object
 })
 
 const isEditing = computed(() => Boolean(props.etapa9 && props.etapa9.id))
@@ -214,3 +256,55 @@ function confirmDelete() {
   })
 }
 </script>
+
+<style scoped>
+.modern-btn-cyan {
+  background: linear-gradient(90deg, #06b6d4 0%, #0ea5e9 100%);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px 0 rgba(6,182,212,0.10);
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.modern-btn-cyan:hover {
+  background: linear-gradient(90deg, #0ea5e9 0%, #06b6d4 100%);
+  transform: scale(1.04);
+}
+.modern-btn-red {
+  background: linear-gradient(90deg, #ef4444 0%, #f87171 100%);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px 0 rgba(239,68,68,0.10);
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  margin-top: 0.5rem;
+}
+.modern-btn-red:hover {
+  background: linear-gradient(90deg, #f87171 0%, #ef4444 100%);
+  transform: scale(1.04);
+}
+.modern-input-cyan {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1.5px solid #06b6d4;
+  background: linear-gradient(135deg, #e0f2fe 0%, #f0fdfa 100%);
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  color: #0891b2;
+  transition: border 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px 0 rgba(6,182,212,0.08);
+}
+.modern-input-cyan:focus {
+  border-color: #06b6d4;
+  outline: none;
+  box-shadow: 0 0 0 2px #0ea5e9;
+}
+</style>

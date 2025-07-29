@@ -13,6 +13,7 @@ use App\Models\RecursoDisponible;
 use App\Models\RecursoNecesario;
 use App\Models\SegmentoClientes;
 use App\Models\AlianzaClave;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -24,10 +25,11 @@ class Etapa4Controller extends Controller
 
         $user = Auth::user();
         $propuestavalor = PropuestaValor::where('proyecto_id', $id)->where('user_id', $user->id)->first();
-
+        $proyectoactual= Project::find($id);
         return Inertia::render('Etapa4/Menu', [
             'proyecto_id' => $id,
             'propuestavalor' => $propuestavalor,
+            'proyectoactual' => $proyectoactual,
         ]);
     }
     //rutas propuesta de valor
@@ -35,9 +37,11 @@ class Etapa4Controller extends Controller
     {
         $user = Auth::user();
         $propuestavalor = PropuestaValor::where('proyecto_id', $id)->where('user_id', $user->id)->first();
+        $proyectoactual= Project::find($id);
         return Inertia::render('Etapa4/PropuestaValor', [
             'proyecto_id' => $id,
             'propuestavalor' => $propuestavalor,
+            'proyectoactual' => $proyectoactual,
         ]);
     }
     public function propuestavalorstore(Request $request)
@@ -150,9 +154,11 @@ class Etapa4Controller extends Controller
         $segmentoclientes = SegmentoClientes::where('proyecto_id', $id)
             ->where('user_id', $user->id)
             ->first();
+            $proyectoactual= Project::find($id);
         return Inertia::render('Etapa4/SegmentoClientes', [
             'proyecto_id' => $id,
             'segmentoclientes' => $segmentoclientes,
+            'proyectoactual' => $proyectoactual,
         ]);
     }
     public function segmentoclientesstore(Request $request)
@@ -203,9 +209,11 @@ class Etapa4Controller extends Controller
         $relacionclientes = RelacionClientes::where('proyecto_id', $id)
             ->where('user_id', $user->id)
             ->first();
+            $proyectoactual= Project::find($id);
         return Inertia::render('Etapa4/RelacionClientes', [
             'proyecto_id' => $id,
             'relacionclientes' => $relacionclientes,
+            'proyectoactual' => $proyectoactual,
         ]);
     }
     public function relacionclientesstore(Request $request)
@@ -238,12 +246,13 @@ public function recursosclave($id)
     $clave = RecursosClave::firstOrCreate(
         ['proyecto_id'=>$id, 'user_id'=>$user->id]
     );
-
+    $proyectoactual= Project::find($id);
     return Inertia::render('Etapa4/RecursosClave', [
         'proyecto_id'    => $id,
         'recursos_clave' => $clave,
         'disponibles'    => $clave->disponibles,
         'necesarios'     => $clave->necesarios,
+        'proyectoactual' => $proyectoactual,
     ]);
 }
 
@@ -328,9 +337,11 @@ public function necesariosDelete($id)
         $canales = Canales::where('proyecto_id', $id)
             ->where('user_id', $user->id)
             ->first();
+            $proyectoactual= Project::find($id);
         return Inertia::render('Etapa4/Canales', [
             'proyecto_id' => $id,
             'canales' => $canales,
+            'proyectoactual' => $proyectoactual,
         ]);
     }
     public function canalesstore(Request $request)
@@ -390,11 +401,13 @@ public function necesariosDelete($id)
         $procesoproductivo = ProcesoProductivo::where('proyecto_id', $id)
             ->where('user_id', $user->id)
             ->get();
+        $proyectoactual= Project::find($id);
         return Inertia::render('Etapa4/ActividadesClave', [
             'proyecto_id' => $id,
             'actividadesclave' => $actividadesclave,
             'procesocomercial' => $procesocomercial,
             'procesoproductivo' => $procesoproductivo,
+            'proyectoactual' => $proyectoactual,
         ]);
     }
     public function actividadesclavestore(Request $request)
@@ -518,9 +531,11 @@ public function necesariosDelete($id)
         $alianzasclave = AlianzaClave::where('proyecto_id', $id)
             ->where('user_id', $user->id)
             ->get();
+            $proyectoactual= Project::find($id);
         return Inertia::render('Etapa4/AlianzaClave', [
             'proyecto_id' => $id,
             'alianzasclave' => $alianzasclave,
+            'proyectoactual' => $proyectoactual,
         ]);
     }
     public function alianzasclavestore(Request $request)

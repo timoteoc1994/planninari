@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Etapa1;
+use App\Models\Project;
 use Inertia\Inertia;
 
 class Etapas extends Controller
@@ -12,9 +13,11 @@ class Etapas extends Controller
     public function etapa1($id)
     {
         $etapa1 = Etapa1::where('proyecto_id', $id)->first();
+        $proyectoacutal= Project::find($id);
         return Inertia::render('Etapa1', [
             'etapa1' => $etapa1,
             'proyecto_id' => $id,
+            'proyectoactual' => $proyectoacutal,
         ]);
        
     }

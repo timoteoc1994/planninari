@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Etapa9;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -13,10 +14,11 @@ class Etapa9Controller extends Controller
     public function index($proyecto_id)
     {
         $etapa9 = Etapa9::where('proyecto_id', $proyecto_id)->first();
-
+        $proyectoactual = Project::find($proyecto_id);
         return Inertia::render('Etapa9', [
             'etapa9'      => $etapa9,
             'proyecto_id' => $proyecto_id,
+            'proyectoactual' => $proyectoactual,
         ]);
     }
 

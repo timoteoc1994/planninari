@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\etapa3;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -17,10 +18,11 @@ class Etapa3Controller extends Controller
     {
         $user = Auth::user();
         $etapa3 = etapa3::where('proyecto_id', $proyecto_id)->where('user_id', $user->id)->first();
-
+        $proyectoactual= Project::find($proyecto_id);
         return inertia('Etapa3', [
             'etapa3' => $etapa3,
             'proyecto_id' => $proyecto_id,
+            'proyectoactual' => $proyectoactual
         ]);
     }
 

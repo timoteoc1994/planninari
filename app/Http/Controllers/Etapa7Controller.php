@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Etapa7;
+use App\Models\Project;
 use App\Models\RecursosClave;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,12 +28,13 @@ class Etapa7Controller extends Controller
             ->where('proyecto_id', $proyecto_id)
             ->where('user_id', $user->id)
             ->get();
-
+        $proyectoactual = Project::find($proyecto_id);
         return Inertia::render('Etapa7', [
             'proyecto_id' => $proyecto_id,
             'disponibles' => $clave->disponibles,
             'necesarios'  => $clave->necesarios,
             'inversiones' => $inversiones,
+            'proyectoactual' => $proyectoactual,
         ]);
     }
 

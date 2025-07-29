@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Etapa6;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -15,10 +16,11 @@ class Etapa6Controller extends Controller
         $etapa6 = Etapa6::where('proyecto_id', $proyecto_id)
                         ->where('user_id', $user->id)
                         ->first();
-
+        $proyectoactual = Project::find($proyecto_id);
         return Inertia::render('Etapa6', [
             'etapa6'      => $etapa6,
             'proyecto_id' => $proyecto_id,
+            'proyectoactual' => $proyectoactual,
         ]);
     }
 

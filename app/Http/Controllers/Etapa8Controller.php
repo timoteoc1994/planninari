@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Etapa8;
+use App\Models\Project;
 use App\Models\PropuestaValor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,10 +21,11 @@ class Etapa8Controller extends Controller
         $propuestavalor = PropuestaValor::where('proyecto_id', $id)
             ->where('user_id', $user->id)
             ->first();
-
+        $proyectoactual = Project::find($id);
         return Inertia::render('Etapa8/Menu', [
             'proyecto_id'     => $id,
             'propuestavalor'  => $propuestavalor,
+            'proyectoactual'  => $proyectoactual,
         ]);
     }
 

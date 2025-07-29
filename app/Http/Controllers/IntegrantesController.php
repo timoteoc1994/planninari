@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Integrantes;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -18,9 +19,11 @@ class IntegrantesController extends Controller
 
         $user = auth()->user();
         $etapa2 = Integrantes::where('proyecto_id', $id)->where('user_id', $user->id)->get();
+        $proyectoacutal= Project::find($id);
         return Inertia::render('Etapa2', [
             'etapa2' => $etapa2,
             'proyecto_id' => $id,
+            'proyectoactual' => $proyectoacutal,
         ]);
     }
 
