@@ -12,7 +12,9 @@ class PlanesController extends Controller
      */
     public function index()
     {
-        //
+        return inertia('Planes/Index', [
+            'planes' => Planes::all(),
+        ]);
     }
 
     /**
