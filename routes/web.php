@@ -13,6 +13,7 @@ use App\Http\Controllers\CostoFijoController;
 use App\Http\Controllers\PagoMensualController;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\PuntoEquilibrioController;
+use App\Http\Controllers\PuntoEquilibrioProductoController;
 use App\Http\Controllers\Etapa9Controller;
 use App\Http\Controllers\Etapa10Controller;
 use App\Http\Controllers\Etapas;
@@ -306,4 +307,34 @@ Route::middleware([
         Route::get('adminproyecto/', [PlanesController::class, 'index'])->name('planes.index');
        
     });
+// routes/web.php
+Route::prefix('proyecto/{id}')->group(function(){
+    Route::resource('empleados', EmpleadoController::class)
+         ->except(['show','create','edit'])
+         ->names('empleados');
+});
+
+
+Route::prefix('proyecto/{id}')->group(function(){
+    Route::resource('costos-fijos', CostoFijoController::class)
+         ->parameters(['costos-fijos' => 'costo_fijo']);
+    Route::resource('pagos-mensuales', PagoMensualController::class)
+         ->parameters(['pagos-mensuales' => 'pago_mensual']);
+});
+
+
+   Route::get    ('proyecto/{id}/punto-equilibrio', [PuntoEquilibrioController::class, 'index'])->name('punto-equilibrio.index');
+Route::put    ('proyecto/{id}/punto-equilibrio/{punto_equilibrio}', [PuntoEquilibrioController::class, 'update'])->name('punto-equilibrio.update');
+
+Route::resource('proyecto.punto-equilibrio-productos', PuntoEquilibrioProductoController::class)
+    ->names([
+        'index' => 'punto-equilibrio-productos.index',
+        'create' => 'punto-equilibrio-productos.create',
+        'store' => 'punto-equilibrio-productos.store',
+        'show' => 'punto-equilibrio-productos.show',
+        'edit' => 'punto-equilibrio-productos.edit',
+        'update' => 'punto-equilibrio-productos.update',
+        'destroy' => 'punto-equilibrio-productos.destroy',
+    ]);
+
 });
