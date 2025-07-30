@@ -15,6 +15,7 @@ use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\PuntoEquilibrioController;
 use App\Http\Controllers\PuntoEquilibrioProductoController;
 use App\Http\Controllers\PresupuestoVentasController;
+use App\Http\Controllers\FlujoCajaController;
 use App\Http\Controllers\Etapa9Controller;
 use App\Http\Controllers\Etapa10Controller;
 use App\Http\Controllers\Etapas;
@@ -357,4 +358,15 @@ Route::delete(
     [PresupuestoVentasController::class, 'clearMetas']
 )->name('presupuesto-ventas.clearMetas');
 
+
+
+Route::get(
+    '/proyecto/{id}/flujo-caja',
+    [FlujoCajaController::class, 'index']
+)->name('flujo-caja.index');
+
+Route::patch(
+    '/proyecto/{id}/flujo-caja',
+    [FlujoCajaController::class, 'store']
+)->name('flujo-caja.update');
 });
