@@ -49,6 +49,7 @@
                   <input
                     type="number"
                     v-model.number="metas100[r.ref]"
+                    @change="saveMetas"
                     class="w-20 text-right border rounded p-1"
                   />
                 </td>
@@ -112,6 +113,7 @@
                   <input
                     type="number"
                     v-model.number="metas125[r.ref]"
+                    @change="saveMetas"
                     class="w-20 text-right border rounded p-1"
                   />
                 </td>
@@ -145,7 +147,8 @@
 </template>
 
 <script setup>
-import { reactive, computed, onMounted, watch } from 'vue'
+import { reactive, computed, onMounted } from 'vue'
+import axios from 'axios'
 import AppLayout from '@/Layouts/AppLayout.vue'
 
 const props = defineProps({
@@ -153,128 +156,104 @@ const props = defineProps({
   dias_por_semana: Number,
   punto_equilibrio_mensual_global: Number,
   totalCostos: Number,
-  margen_ponderado: Number,
+  proyecto_id: Number,
+  metas: Array,
 })
 
-// LocalStorage keys
-const STORAGE_KEY_100 = 'metas100'
-const STORAGE_KEY_125 = 'metas125'
-
-// Iniciar metas
 const metas100 = reactive({})
 const metas125 = reactive({})
+
 props.recetas.forEach(r => {
   metas100[r.ref] = 0
   metas125[r.ref] = 0
 })
 
-// Cargar del storage
 onMounted(() => {
-  const saved100 = localStorage.getItem(STORAGE_KEY_100)
-  if (saved100) Object.assign(metas100, JSON.parse(saved100))
-  const saved125 = localStorage.getItem(STORAGE_KEY_125)
-  if (saved125) Object.assign(metas125, JSON.parse(saved125))
+  props.metas.forEach(m => {
+    if (metas100.hasOwnProperty(m.ref)) {
+      metas100[m.ref] = m.meta_100
+      metas125[m.ref] = m.meta_125
+    }
+  })
 })
 
-// Guardar cambios
-watch(metas100, val => localStorage.setItem(STORAGE_KEY_100, JSON.stringify(val)), { deep: true })
-watch(metas125, val => localStorage.setItem(STORAGE_KEY_125, JSON.stringify(val)), { deep: true })
+const allMetas = computed(() =>
+  props.recetas.reduce((acc, r) => {
+    acc[r.ref] = { meta100: metas100[r.ref], meta125: metas125[r.ref] }
+    return acc
+  }, {})
+)
 
-// Limpiar datos
-const clearData = () => {
+async function saveMetas() {
+  try {
+    await axios.post(`/proyecto/${props.proyecto_id}/presupuesto-ventas/metas`, {
+      metas: allMetas.value
+    })
+  } catch (error) {
+    console.error('Error guardando metas:', error)
+  }
+}
+
+async function clearData() {
   props.recetas.forEach(r => {
     metas100[r.ref] = 0
     metas125[r.ref] = 0
   })
-  localStorage.removeItem(STORAGE_KEY_100)
-  localStorage.removeItem(STORAGE_KEY_125)
+  try {
+    await axios.delete(`/proyecto/${props.proyecto_id}/presupuesto-ventas/metas`)
+  } catch (error) {
+    console.error('Error limpiando metas:', error)
+  }
 }
 
-// Cálculos proyección 100%
 const proyect100 = computed(() => {
   const p = {}
   props.recetas.forEach(r => {
     const m = metas100[r.ref]
     const semanal = Math.round((m * 12) / 52)
     const diario = Math.round(semanal / props.dias_por_semana)
-    
-    // Venta total del producto
     const venta = m * r.precio_venta
-    
-    // Margen de contribución del producto
     const margen = m * r.margen_contribucion_unidad
-    
-    // Utilidad = Margen - (Costos totales * porcentaje de participación del producto)
     const utilidad = margen - (props.totalCostos * (r.pct_participacion / 100))
-    
-    p[r.ref] = {
-      semanal,
-      diario,
-      venta,
-      margen,
-      utilidad
-    }
+    p[r.ref] = { semanal, diario, venta, margen, utilidad }
   })
   return p
 })
 
-// Cálculos proyección 125%
 const proyect125 = computed(() => {
   const p = {}
   props.recetas.forEach(r => {
     const m = metas125[r.ref]
     const semanal = Math.round((m * 12) / 52)
     const diario = Math.round(semanal / props.dias_por_semana)
-    
-    // Venta total del producto
     const venta = m * r.precio_venta
-    
-    // Margen de contribución del producto
     const margen = m * r.margen_contribucion_unidad
-    
-    // Utilidad = Margen - (Costos totales * porcentaje de participación del producto)
     const utilidad = margen - (props.totalCostos * (r.pct_participacion / 100))
-    
-    p[r.ref] = {
-      semanal,
-      diario,
-      venta,
-      margen,
-      utilidad
-    }
+    p[r.ref] = { semanal, diario, venta, margen, utilidad }
   })
   return p
 })
 
-// Totales proyección 100%
 const totales100 = computed(() =>
   props.recetas.reduce((acc, r) => {
     const v = proyect100.value[r.ref]
-    acc.venta    += v.venta
-    acc.margen   += v.margen
+    acc.venta += v.venta
+    acc.margen += v.margen
     acc.utilidad += v.utilidad
     return acc
   }, { venta: 0, margen: 0, utilidad: 0 })
 )
 
-// Totales proyección 125%
 const totales125 = computed(() =>
   props.recetas.reduce((acc, r) => {
     const v = proyect125.value[r.ref]
-    acc.venta    += v.venta
-    acc.margen   += v.margen
+    acc.venta += v.venta
+    acc.margen += v.margen
     acc.utilidad += v.utilidad
     return acc
   }, { venta: 0, margen: 0, utilidad: 0 })
 )
 
-// Consola: verificar valores de props
-console.log('totalCostos:', props.totalCostos)
-props.recetas.forEach(r => {
-  console.log(`Margen ponderado de ${r.ref}:`, r.pct_participacion)
-})
-
-// Formateadores
-const formatNumber  = v => isNaN(Number(v)) ? '0.00' : Number(v).toFixed(2)
-const formatInteger = v => isNaN(Number(v)) ? '0'    : Math.round(v).toString()
+const formatNumber = v => isNaN(Number(v)) ? '0.00' : Number(v).toFixed(2)
+const formatInteger = v => isNaN(Number(v)) ? '0' : Math.round(v).toString()
 </script>

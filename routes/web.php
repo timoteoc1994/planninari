@@ -338,9 +338,23 @@ Route::resource('proyecto.punto-equilibrio-productos', PuntoEquilibrioProductoCo
         'destroy' => 'punto-equilibrio-productos.destroy',
     ]);
 
-    Route::get(
+
+// 1) Mostrar la vista (ya la tenías)
+Route::get(
     '/proyecto/{id}/presupuesto-ventas',
     [PresupuestoVentasController::class, 'index']
 )->name('presupuesto-ventas.index');
+
+// 2) Guardar/actualizar metas (100% y 125%)
+Route::post(
+    '/proyecto/{id}/presupuesto-ventas/metas',
+    [PresupuestoVentasController::class, 'storeMetas']
+)->name('presupuesto-ventas.storeMetas');
+
+// 3) Limpiar metas
+Route::delete(
+    '/proyecto/{id}/presupuesto-ventas/metas',
+    [PresupuestoVentasController::class, 'clearMetas']
+)->name('presupuesto-ventas.clearMetas');
 
 });
