@@ -32,6 +32,7 @@ return array(
     'App\\Http\\Controllers\\ProjectController' => $baseDir . '/app/Http/Controllers/ProjectController.php',
     'App\\Http\\Controllers\\ProjectStageController' => $baseDir . '/app/Http/Controllers/ProjectStageController.php',
     'App\\Http\\Controllers\\PuntoEquilibrioController' => $baseDir . '/app/Http/Controllers/PuntoEquilibrioController.php',
+    'App\\Http\\Controllers\\PuntoEquilibrioProductoController' => $baseDir . '/app/Http/Controllers/PuntoEquilibrioProductoController.php',
     'App\\Http\\Controllers\\RecetaEstandarController' => $baseDir . '/app/Http/Controllers/RecetaEstandarController.php',
     'App\\Http\\Middleware\\HandleInertiaRequests' => $baseDir . '/app/Http/Middleware/HandleInertiaRequests.php',
     'App\\Models\\ActividadesClave' => $baseDir . '/app/Models/ActividadesClave.php',

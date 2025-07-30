@@ -38,13 +38,9 @@
               <td class="p-2 text-right border">
                 {{ formatInteger(r.pct_participacion) }}%
               </td>
-              <td class="p-2 text-right border">
-  {{ formatInteger(((r.unidades_mensuales_necesarias * 12) / 52) / diasPorSemana) }}
-</td>
-<td class="p-2 text-right border">
-  {{ formatInteger((r.unidades_mensuales_necesarias * 12) / 52) }}
-</td>
-              <td class="p-2 text-right border">{{ r.unidades_mensuales_necesarias }}</td>
+                 <td class="p-2 text-right border">{{ formatInteger(r.unidades_diarias) }}</td>
+    <td class="p-2 text-right border">{{ formatInteger(r.unidades_semanales) }}</td>
+    <td class="p-2 text-right border">{{ formatInteger(r.unidades_mensuales_necesarias) }}</td>
               <td class="p-2 text-right border">
                 ${{ formatNumber(r.margen_contribucion_unidad) }}
               </td>

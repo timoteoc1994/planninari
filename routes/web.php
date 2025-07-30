@@ -14,6 +14,7 @@ use App\Http\Controllers\PagoMensualController;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\PuntoEquilibrioController;
 use App\Http\Controllers\PuntoEquilibrioProductoController;
+use App\Http\Controllers\PresupuestoVentasController;
 use App\Http\Controllers\Etapa9Controller;
 use App\Http\Controllers\Etapa10Controller;
 use App\Http\Controllers\Etapas;
@@ -336,5 +337,10 @@ Route::resource('proyecto.punto-equilibrio-productos', PuntoEquilibrioProductoCo
         'update' => 'punto-equilibrio-productos.update',
         'destroy' => 'punto-equilibrio-productos.destroy',
     ]);
+
+    Route::get(
+    '/proyecto/{id}/presupuesto-ventas',
+    [PresupuestoVentasController::class, 'index']
+)->name('presupuesto-ventas.index');
 
 });

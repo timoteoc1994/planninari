@@ -7,7 +7,6 @@ use App\Models\RecetaEstandar;
 use App\Models\CostoVariable;
 use App\Models\CostoFijo;
 use App\Models\Empleado;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -15,19 +14,17 @@ class PuntoEquilibrioProductoController extends Controller
 {
     public function index($proyectoId)
     {
+        // 1) Configuración días por semana
         $userId = Auth::id();
-
-        // 1) Configuración días x semana
         $config = PuntoEquilibrio::firstOrCreate(
             ['proyecto_id' => $proyectoId, 'user_id' => $userId],
             ['dias_por_semana' => 6]
         );
 
-        // 2) Obtener recetas y costos
+        // 2) Cargar recetas y costos variables
         $recetas = RecetaEstandar::where('proyecto_id', $proyectoId)
                      ->where('user_id', $userId)
-                     ->get(['ref','nombre_producto','presentacion']);
-
+                     ->get(['ref', 'nombre_producto', 'presentacion']);
         $costosVariables = CostoVariable::where('proyecto_id', $proyectoId)
                                         ->where('user_id', $userId)
                                         ->get();
@@ -36,54 +33,37 @@ class PuntoEquilibrioProductoController extends Controller
         $totalSalariosReales = Empleado::where('proyecto_id', $proyectoId)
                                       ->where('user_id', $userId)
                                       ->sum('salario_real');
-
         $totalCostosFijos = CostoFijo::where('proyecto_id', $proyectoId)
                                      ->where('user_id', $userId)
                                      ->sum('valor');
-
         $totalCostos = $totalSalariosReales + $totalCostosFijos;
 
-        // 4) Combinar recetas con cálculos de margen y participación
-        $productos = $recetas->map(function ($receta) use ($costosVariables, $config) {
-            $c = $costosVariables->firstWhere('ref', $receta->ref);
-            if (!$c) {
-                // datos por defecto si no hay costo variable
+        // 4) Enriquecer cada receta con datos de costo y margen
+        $productos = $recetas->map(function ($receta) use ($costosVariables) {
+            $cv = $costosVariables->firstWhere('ref', $receta->ref);
+            if ($cv) {
+                $receta->precio_venta = $cv->venta_unitario;
+                $receta->costo_unitario = $cv->costo_unitario;
+                $receta->margen_contribucion_unidad = $cv->venta_unitario - $cv->costo_unitario;
+                $receta->pct_margen = $cv->pct_margen;
+                $receta->unidad_medida = $cv->unidad ?? 'unidad';
+            } else {
                 $receta->precio_venta = 0;
                 $receta->costo_unitario = 0;
-                $receta->unidades_diarias = 0;
-                $receta->unidades_semanales = 0;
-                $receta->unidades_mensuales = 0;
                 $receta->margen_contribucion_unidad = 0;
-                $receta->pct_participacion = 0;
                 $receta->pct_margen = 0;
-                $receta->margen_ponderado = 0;
                 $receta->unidad_medida = 'unidad';
-            } else {
-                $pv = $c->venta_unitario;
-                $cu = $c->costo_unitario;
-                $receta->precio_venta = $pv;
-                $receta->costo_unitario = $cu;
-                $receta->unidades_diarias = $receta->unidades_diarias ?? 0;
-                $receta->unidades_semanales = $receta->unidades_diarias * $config->dias_por_semana;
-                $receta->unidades_mensuales = round($receta->unidades_semanales * (52/12));
-                $receta->margen_contribucion_unidad = $pv - $cu;
-                // participación sobre total_venta se calcula más abajo
-                $receta->pct_margen = $c->pct_margen;
-                $receta->unidad_medida = $c->unidad ?? 'unidad';
             }
             return $receta;
         });
 
-        // 5) Totales globales de venta y margen ponderado
+        // 5) % participación y margen ponderado
         $totalVentas = $costosVariables->sum('total_venta');
-        // recalculamos pct_participacion y margen_ponderado con el total global
         $productos = $productos->map(function ($receta) use ($costosVariables, $totalVentas) {
             $cv = $costosVariables->firstWhere('ref', $receta->ref);
             if ($cv && $totalVentas > 0) {
-                $pctPart = ($cv->total_venta / $totalVentas) * 100;
-                $receta->pct_participacion = $pctPart;
-                // margen ponderado = %participación × margen x unidad
-                $receta->margen_ponderado = $pctPart * $receta->margen_contribucion_unidad;
+                $receta->pct_participacion = ($cv->total_venta / $totalVentas) * 100;
+                $receta->margen_ponderado = $receta->pct_participacion * $receta->margen_contribucion_unidad;
             } else {
                 $receta->pct_participacion = 0;
                 $receta->margen_ponderado = 0;
@@ -91,31 +71,48 @@ class PuntoEquilibrioProductoController extends Controller
             return $receta;
         });
 
+        // 6) Total margen ponderado y unidades mensuales globales
         $totalMargenPonderado = $productos->sum('margen_ponderado');
-
-        // 6) Unidades mensuales necesarias **global**
         $unidadesMensualesNecesariasGlobal = $totalMargenPonderado > 0
             ? $totalCostos / $totalMargenPonderado
             : 0;
 
-        // 7) Ahora asignamos la unidad neces. individual a cada producto
-        $productos = $productos->map(function ($receta) use ($unidadesMensualesNecesariasGlobal) {
-    // Aplicamos directamente el cálculo sin dividir entre 100
-    $receta->unidades_mensuales_necesarias = round(
-        $unidadesMensualesNecesariasGlobal * $receta->pct_participacion,
-        0  // Sin decimales
-    );
-    return $receta;
-});
+        // 7) **Cálculo de unidades**: mensuales, semanales y diarias
+        $productos = $productos->map(function ($receta) use ($unidadesMensualesNecesariasGlobal, $config) {
+            // Unidades mensuales necesarias por producto
+            $receta->unidades_mensuales_necesarias = (int) round(
+                $unidadesMensualesNecesariasGlobal * $receta->pct_participacion,
+                0
+            );
+
+            // Unidades semanales ≈ (mensuales × 12) / 52
+            $receta->unidades_semanales = (int) round(
+                $receta->unidades_mensuales_necesarias * 12 / 52,
+                0
+            );
+
+            // **Unidades diarias** usando tu fórmula: ((mensuales × 12) / 52) / diasPorSemana
+            $receta->unidades_diarias = $config->dias_por_semana > 0
+                ? (int) round(
+                    ($receta->unidades_mensuales_necesarias * 12 / 52)
+                    / $config->dias_por_semana,
+                    0
+                )
+                : 0;
+
+            return $receta;
+        });
+
+        // 8) Enviar todo a la vista
         return Inertia::render('Etapa8/PuntoEquilibrioProductos', [
-            'proyecto_id' => $proyectoId,
-            'recetas'    => $productos,
-            'dias_por_semana'              => $config->dias_por_semana,
-            'totalUnidadesMensuales'       => $productos->sum('unidades_mensuales'),
-            'totalMargenPonderado'         => $totalMargenPonderado,
-            'totalCostosFijos'             => $totalCostosFijos,
-            'totalSalariosReales'          => $totalSalariosReales,
-            'unidadesMensualesNecesarias'  => $unidadesMensualesNecesariasGlobal,
+            'proyecto_id'                 => $proyectoId,
+            'recetas'                     => $productos,
+            'dias_por_semana'             => $config->dias_por_semana,
+            'totalUnidadesMensuales'      => $productos->sum('unidades_mensuales_necesarias'),
+            'totalMargenPonderado'        => $totalMargenPonderado,
+            'totalCostosFijos'            => $totalCostosFijos,
+            'totalSalariosReales'         => $totalSalariosReales,
+            'unidadesMensualesNecesarias' => $unidadesMensualesNecesariasGlobal,
         ]);
     }
 }
