@@ -15,6 +15,7 @@ use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\PuntoEquilibrioController;
 use App\Http\Controllers\PuntoEquilibrioProductoController;
 use App\Http\Controllers\PresupuestoVentasController;
+use App\Http\Controllers\PresupuestoMarketingController;
 use App\Http\Controllers\FlujoCajaController;
 use App\Http\Controllers\Etapa9Controller;
 use App\Http\Controllers\Etapa10Controller;
@@ -375,4 +376,17 @@ Route::get(
     [FlujoCajaController::class, 'analisis']
 )->name('flujo-caja.analisis');
 
+
+
+
+    Route::get('/proyecto/{proyecto_id}/presupuesto-marketing', [PresupuestoMarketingController::class, 'index'])
+        ->name('presupuesto-marketing.index');
+    
+    // Guardar presupuesto (POST para crear)
+    Route::post('/proyecto/{proyecto_id}/presupuesto-marketing', [PresupuestoMarketingController::class, 'store'])
+        ->name('presupuesto-marketing.store');
+    
+    // Actualizar presupuesto (PUT para actualizar)
+    Route::put('/proyecto/{proyecto_id}/presupuesto-marketing', [PresupuestoMarketingController::class, 'update'])
+        ->name('presupuesto-marketing.update');
 });
