@@ -13,6 +13,10 @@ use App\Http\Controllers\CostoFijoController;
 use App\Http\Controllers\PagoMensualController;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\PuntoEquilibrioController;
+use App\Http\Controllers\PuntoEquilibrioProductoController;
+use App\Http\Controllers\PresupuestoVentasController;
+use App\Http\Controllers\PresupuestoMarketingController;
+use App\Http\Controllers\FlujoCajaController;
 use App\Http\Controllers\Etapa9Controller;
 use App\Http\Controllers\Etapa10Controller;
 use App\Http\Controllers\Etapas;
@@ -304,6 +308,92 @@ Route::middleware([
 
     Route::get('proyecto/{id}/punto-equilibrio', [PuntoEquilibrioController::class, 'index'])->name('punto-equilibrio.index');
     Route::put('proyecto/{id}/punto-equilibrio/{punto_equilibrio}', [PuntoEquilibrioController::class, 'update'])->name('punto-equilibrio.update');
+
+
+    //rutas usuario administrador con spatie
+    Route::middleware(['auth', 'role:Administrador,Usuario'])->group(function () {
+        Route::get('adminproyecto/', [PlanesController::class, 'index'])->name('planes.index');
+       
+    });
+// routes/web.php
+Route::prefix('proyecto/{id}')->group(function(){
+    Route::resource('empleados', EmpleadoController::class)
+         ->except(['show','create','edit'])
+         ->names('empleados');
+});
+
+
+Route::prefix('proyecto/{id}')->group(function(){
+    Route::resource('costos-fijos', CostoFijoController::class)
+         ->parameters(['costos-fijos' => 'costo_fijo']);
+    Route::resource('pagos-mensuales', PagoMensualController::class)
+         ->parameters(['pagos-mensuales' => 'pago_mensual']);
+});
+
+
+   Route::get    ('proyecto/{id}/punto-equilibrio', [PuntoEquilibrioController::class, 'index'])->name('punto-equilibrio.index');
+Route::put    ('proyecto/{id}/punto-equilibrio/{punto_equilibrio}', [PuntoEquilibrioController::class, 'update'])->name('punto-equilibrio.update');
+
+Route::resource('proyecto.punto-equilibrio-productos', PuntoEquilibrioProductoController::class)
+    ->names([
+        'index' => 'punto-equilibrio-productos.index',
+        'create' => 'punto-equilibrio-productos.create',
+        'store' => 'punto-equilibrio-productos.store',
+        'show' => 'punto-equilibrio-productos.show',
+        'edit' => 'punto-equilibrio-productos.edit',
+        'update' => 'punto-equilibrio-productos.update',
+        'destroy' => 'punto-equilibrio-productos.destroy',
+    ]);
+
+
+// 1) Mostrar la vista (ya la tenías)
+Route::get(
+    '/proyecto/{id}/presupuesto-ventas',
+    [PresupuestoVentasController::class, 'index']
+)->name('presupuesto-ventas.index');
+
+// 2) Guardar/actualizar metas (100% y 125%)
+Route::post(
+    '/proyecto/{id}/presupuesto-ventas/metas',
+    [PresupuestoVentasController::class, 'storeMetas']
+)->name('presupuesto-ventas.storeMetas');
+
+// 3) Limpiar metas
+Route::delete(
+    '/proyecto/{id}/presupuesto-ventas/metas',
+    [PresupuestoVentasController::class, 'clearMetas']
+)->name('presupuesto-ventas.clearMetas');
+
+
+
+Route::get(
+    '/proyecto/{id}/flujo-caja',
+    [FlujoCajaController::class, 'index']
+)->name('flujo-caja.index');
+
+Route::patch(
+    '/proyecto/{id}/flujo-caja',
+    [FlujoCajaController::class, 'store']
+)->name('flujo-caja.update');
+
+Route::get(
+    '/proyecto/{id}/analisis-financiero',
+    [FlujoCajaController::class, 'analisis']
+)->name('flujo-caja.analisis');
+
+
+
+
+    Route::get('/proyecto/{proyecto_id}/presupuesto-marketing', [PresupuestoMarketingController::class, 'index'])
+        ->name('presupuesto-marketing.index');
+    
+    // Guardar presupuesto (POST para crear)
+    Route::post('/proyecto/{proyecto_id}/presupuesto-marketing', [PresupuestoMarketingController::class, 'store'])
+        ->name('presupuesto-marketing.store');
+    
+    // Actualizar presupuesto (PUT para actualizar)
+    Route::put('/proyecto/{proyecto_id}/presupuesto-marketing', [PresupuestoMarketingController::class, 'update'])
+        ->name('presupuesto-marketing.update');
 
 });
 

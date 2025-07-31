@@ -663,6 +663,7 @@ class ComposerStaticInit3e76c5f9ff515b4b29b5a4d734ab9233
         'App\\Http\\Controllers\\ProjectController' => __DIR__ . '/../..' . '/app/Http/Controllers/ProjectController.php',
         'App\\Http\\Controllers\\ProjectStageController' => __DIR__ . '/../..' . '/app/Http/Controllers/ProjectStageController.php',
         'App\\Http\\Controllers\\PuntoEquilibrioController' => __DIR__ . '/../..' . '/app/Http/Controllers/PuntoEquilibrioController.php',
+        'App\\Http\\Controllers\\PuntoEquilibrioProductoController' => __DIR__ . '/../..' . '/app/Http/Controllers/PuntoEquilibrioProductoController.php',
         'App\\Http\\Controllers\\RecetaEstandarController' => __DIR__ . '/../..' . '/app/Http/Controllers/RecetaEstandarController.php',
         'App\\Http\\Middleware\\HandleInertiaRequests' => __DIR__ . '/../..' . '/app/Http/Middleware/HandleInertiaRequests.php',
         'App\\Models\\ActividadesClave' => __DIR__ . '/../..' . '/app/Models/ActividadesClave.php',
