@@ -27,7 +27,7 @@ const stages = ref([]);
             <div class="max-w-6xl mx-auto px-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Etapa 1 -->
-                    <a :href="route('etapa1', { id: project.id })" 
+                    <a :href="route('etapa1.menu', { id: project.id })" 
                        class="group block bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border-l-4 border-blue-500 overflow-hidden">
                         <div class="p-6">
                             <div class="flex items-center mb-4">

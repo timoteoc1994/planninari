@@ -8,6 +8,7 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 
+
 defineProps({
     title: String,
 });
@@ -49,13 +50,14 @@ const logout = () => {
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                   Mis Planes
+                                   Mis Planes 
                                 </NavLink>
                             </div>
 
-                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('planes.index')" :active="route().current('planes.index')">
-                                    Proyectos
+                            <!-- vamos anadir un id si es administrado nomas aparace esto-->
+                            <div v-if="$page.props.auth.roles.includes('Administrador')" class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('planes.index')" :active="route().current('planes*')">
+                                    Proyectos 
                                 </NavLink>
                             </div>
                         </div>
