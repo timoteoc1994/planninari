@@ -369,4 +369,10 @@ Route::patch(
     '/proyecto/{id}/flujo-caja',
     [FlujoCajaController::class, 'store']
 )->name('flujo-caja.update');
+
+Route::get(
+    '/proyecto/{id}/analisis-financiero',
+    [FlujoCajaController::class, 'analisis']
+)->name('flujo-caja.analisis');
+
 });

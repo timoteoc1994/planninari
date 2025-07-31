@@ -3,15 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\FlujoCaja;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class FlujoCajaController extends Controller
 {
-    /**
-     * Muestra la vista con los datos existentes (o valores por defecto).
-     */
     public function index($proyectoId)
     {
         $userId = Auth::id();
@@ -38,13 +36,47 @@ class FlujoCajaController extends Controller
             'gastos'                 => $flujo->gastos,
             'financiamientoRecibido' => $flujo->financiamiento_recibido,
             'pagosFinanciamiento'    => $flujo->pagos_financiamiento,
+            'tna_inversion_alternativa' => $flujo->tna_inversion_alternativa,
+            'tir_anual'              => $flujo->tir_anual,
+            'van'                    => $flujo->van,
         ]);
     }
 
-    /**
-     * Recibe un PATCH con cualquiera de los campos y actualiza el flujo.
-     * Devuelve la misma vista Inertia con los datos recién guardados.
-     */
+    public function analisis($proyectoId)
+{
+    $userId = Auth::id();
+
+    $flujo = FlujoCaja::firstOrCreate(
+        [
+            'proyecto_id' => $proyectoId,
+            'user_id'     => $userId,
+        ],
+        [
+            'saldo_inicial'           => 0,
+            'ingresos'                => [],
+            'gastos'                  => [],
+            'financiamiento_recibido' => [],
+            'pagos_financiamiento'    => [],
+        ]
+    );
+
+          // Cargar el nombre del proyecto directamente
+    $proyecto = Project::find($proyectoId);
+    $nombreProyecto = $proyecto?->name ?? 'Proyecto sin nombre';
+
+return Inertia::render('Etapa8/AnalisisFinanciero', [
+    'flujo_id' => $flujo->id,
+    'proyecto_id' => $proyectoId,
+    'saldo_inicial' => $flujo->saldo_inicial,
+    'ingresos' => $flujo->ingresos,
+    'gastos' => $flujo->gastos,
+    'tna_inversion_alternativa' => $flujo->tna_inversion_alternativa,
+    'tir_anual' => $flujo->tir_anual,
+    'van' => $flujo->van,
+    'proyecto_nombre' => $proyecto->nombre,
+]);
+}
+
     public function store(Request $request, $proyectoId)
     {
         $userId = Auth::id();
@@ -69,27 +101,17 @@ class FlujoCajaController extends Controller
             'gastos'                  => 'nullable|array',
             'financiamiento_recibido' => 'nullable|array',
             'pagos_financiamiento'    => 'nullable|array',
+            'tna_inversion_alternativa' => 'nullable|numeric',
+            'tir_anual'               => 'nullable|numeric',
+            'van'                     => 'nullable|numeric',
         ]);
 
-        if ($request->has('saldo_inicial')) {
-            $flujo->saldo_inicial = $validated['saldo_inicial'];
-        }
-        if ($request->has('ingresos')) {
-            $flujo->ingresos = $validated['ingresos'];
-        }
-        if ($request->has('gastos')) {
-            $flujo->gastos = $validated['gastos'];
-        }
-        if ($request->has('financiamiento_recibido')) {
-            $flujo->financiamiento_recibido = $validated['financiamiento_recibido'];
-        }
-        if ($request->has('pagos_financiamiento')) {
-            $flujo->pagos_financiamiento = $validated['pagos_financiamiento'];
+        foreach ($validated as $campo => $valor) {
+            $flujo->{$campo} = $valor;
         }
 
         $flujo->save();
 
-        // <-- AQUÍ devolvemos Inertia en vez de JSON plano
         return $this->index($proyectoId);
     }
 }
