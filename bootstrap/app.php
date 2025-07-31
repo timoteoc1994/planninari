@@ -17,6 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
 
+        // Registrar alias para middleware de roles de Spatie
+        $middleware->alias([
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+        ]);
+
     
     })
     ->withExceptions(function (Exceptions $exceptions) {

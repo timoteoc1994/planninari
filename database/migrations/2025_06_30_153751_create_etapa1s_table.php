@@ -27,6 +27,8 @@ return new class extends Migration
             $table->string('nro_emprendimiento')->nullable();
             $table->string('calle_secundaria_emprendimiento')->nullable();
             $table->string('barrio_distrito_emprendimiento')->nullable();
+            $table->string('telefono_emprendimiento')->nullable();
+            $table->string('email_emprendimiento')->nullable();
             $table->string('ubicacion_geoespacial_emprendimiento')->nullable();
             $table->string('cuenta_corriente')->nullable();
             $table->string('tipo_institucion_financiera')->nullable();

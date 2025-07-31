@@ -20,6 +20,7 @@ use App\Http\Controllers\FlujoCajaController;
 use App\Http\Controllers\Etapa9Controller;
 use App\Http\Controllers\Etapa10Controller;
 use App\Http\Controllers\Etapas;
+use App\Http\Controllers\GenerarPdfController;
 use App\Http\Controllers\IntegrantesController;
 use App\Http\Controllers\PlanesController;
 use Illuminate\Foundation\Application;
@@ -27,6 +28,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectStageController;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -51,7 +54,9 @@ Route::middleware([
     Route::delete('/projects/{id}', [ProjectStageController::class, 'projectsdestroy'])->name('projects.destroy');
 
     Route::get('/etapa1/{id}', [Etapas::class, 'etapa1'])->name('etapa1');
+    Route::get('/etapa1/menu/{id}', [Etapas::class, 'menu'])->name('etapa1.menu');
     Route::post('/etapa1/{proyecto_id}', [Etapas::class, 'storeOrUpdate'])->name('etapa1.storeOrUpdate');
+    Route::get('/definicionestrategica/{id}', [Etapas::class, 'definicionindex'])->name('definicionestrategica.index');
 
     // Rutas para proyectos
     Route::get('/projects/{id}', [ProjectStageController::class, 'show'])->name('projects.stages.show');
@@ -389,4 +394,16 @@ Route::get(
     // Actualizar presupuesto (PUT para actualizar)
     Route::put('/proyecto/{proyecto_id}/presupuesto-marketing', [PresupuestoMarketingController::class, 'update'])
         ->name('presupuesto-marketing.update');
+
+});
+
+Route::middleware(['auth', 'role:Administrador'])->group(function () {
+    Route::get('adminproyecto/', [PlanesController::class, 'index'])->name('planes.index');
+    Route::post('adminproyecto/store', [PlanesController::class, 'store'])->name('planes.store');
+    Route::put('adminproyecto/{planes}', [PlanesController::class, 'update'])->name('planes.update');
+    Route::delete('adminproyecto/{planes}', [PlanesController::class, 'destroy'])->name('planes.destroy');
+    Route::get('adminproyecto/{planes}', [PlanesController::class, 'show'])->name('planes.show');
+    Route::get('adminproyecto/{planes}/show', [PlanesController::class, 'showplan'])->name('plan.ver.planes');
+     Route::get('generarpdf/{planes}', [GenerarPdfController::class, 'index'])->name('generar.pdf');
+  
 });

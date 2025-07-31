@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Planes;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,8 +13,12 @@ class ProjectStageController extends Controller
     public function index(){
         $user = Auth::user();
         $proyecto = Project::where('user_id', $user->id)->get();
+
+        //obtener todos los planes agregados por el administrador
+        $planes = Planes::all();
         return Inertia::render('Dashboard', [
-            'projects' => $proyecto
+            'projects' => $proyecto,
+            'planes' => $planes
         ]);
     }
     public function show($id)
@@ -29,6 +34,7 @@ class ProjectStageController extends Controller
        $validated = $request->validate([
            'name' => 'required|string',
            'description' => 'required|string|max:1000',
+           'plan_id' => 'required|exists:planes,id',
        ]);
        $validated['user_id'] = Auth::id();
 

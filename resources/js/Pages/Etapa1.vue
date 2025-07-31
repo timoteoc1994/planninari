@@ -53,6 +53,8 @@ const form = useForm({
     tipo_emprendimiento: props.etapa1?.tipo_emprendimiento ?? '',
     etapa_emprendimiento: props.etapa1?.etapa_emprendimiento ?? '',
     url_imagen_emprendimiento: null,
+    telefono_emprendimiento: props.etapa1?.telefono_emprendimiento ?? '',
+    email_emprendimiento: props.etapa1?.email_emprendimiento ?? '',
 });
 
 const mostrarInstitucion = computed(() => form.cuenta_corriente === 'Si');
@@ -88,6 +90,9 @@ const submit = () => {
                     <nav class="flex items-center space-x-2 text-blue-100 mb-4">
                         <Link class="hover:text-white transition-colors" :href="route('projects.stages.show', proyectoactual.id)">
                             {{ proyectoactual.name }}
+                        </Link>
+                        <Link class="hover:text-white transition-colors" :href="route('etapa1.menu', proyectoactual.id)">
+                            /Menu
                         </Link>
                         <span>/</span>
                         <span class="text-white font-medium">Etapa 1</span>
@@ -251,6 +256,16 @@ const submit = () => {
                                 <div class="form-group">
                                     <label class="form-label">Barrio/Distrito</label>
                                     <input v-model="form.barrio_distrito_emprendimiento" type="text" class="form-input" placeholder="Zona o distrito" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Teléfono</label>
+                                    <input v-model="form.telefono_emprendimiento" type="text" class="form-input" placeholder="Número de teléfono" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Email</label>
+                                    <input v-model="form.email_emprendimiento" type="text" class="form-input" placeholder="Email del emprendimiento" />
                                 </div>
 
                                 <div class="form-group lg:col-span-2">

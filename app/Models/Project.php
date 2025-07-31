@@ -13,10 +13,15 @@ class Project extends Model
         'name',
         'description',
         'user_id',
+        'plan_id',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function Etapa1()
+    {
+        return $this->hasOne(Etapa1::class, 'proyecto_id');
     }
 }

@@ -24,6 +24,8 @@ class Etapa1 extends Model
         'nro_emprendimiento',
         'calle_secundaria_emprendimiento',
         'barrio_distrito_emprendimiento',
+        'telefono_emprendimiento',
+        'email_emprendimiento',
         'ubicacion_geoespacial_emprendimiento',
         'cuenta_corriente',
         'tipo_institucion_financiera',
@@ -39,5 +41,9 @@ class Etapa1 extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function proyecto()
+    {
+        return $this->belongsTo(Project::class, 'proyecto_id');
     }
 }

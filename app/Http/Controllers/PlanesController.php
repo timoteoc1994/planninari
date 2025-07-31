@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Planes;
+use App\Models\Project;
 use Illuminate\Http\Request;
 
 class PlanesController extends Controller
@@ -12,8 +13,8 @@ class PlanesController extends Controller
      */
     public function index()
     {
-        return inertia('Planes/Index', [
-            'planes' => Planes::all(),
+        return inertia('Planes/Plan', [
+            'planes' => Planes::paginate(15),
         ]);
     }
 
@@ -30,7 +31,14 @@ class PlanesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
+        ]);
+
+        Planes::create($request->only('nombre', 'descripcion'));
+
+        return back()->with('success', 'Plan created successfully.');
     }
 
     /**
@@ -38,23 +46,36 @@ class PlanesController extends Controller
      */
     public function show(Planes $planes)
     {
-        //
+
+        $proyectos = Project::with(['Etapa1' => function ($q) {
+            $q->select('id', 'proyecto_id', 'url_imagen_emprendimiento');
+        }])->where('plan_id', $planes->id)->paginate(10);
+        $planes = Planes::findOrFail($planes->id);
+        return inertia('Planes/PlanDetalles', [
+            'planes' => $planes,
+            'proyectos' => $proyectos,
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Planes $planes)
-    {
-        //
-    }
+    public function edit(Planes $planes) {}
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Planes $planes)
     {
-        //
+
+        $validatedData = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
+        ]);
+
+        $planes->update($validatedData);
+
+        return back()->with('success', 'Plan updated successfully.');
     }
 
     /**
@@ -62,6 +83,16 @@ class PlanesController extends Controller
      */
     public function destroy(Planes $planes)
     {
-        //
+        $planes->delete();
+
+        return back()->with('success', 'Plan deleted successfully.');
+    }
+    public function showplan(Project $planes)
+    {
+       
+        $proyecto= Project::where('id', $planes->id)->first();
+        return inertia('Planes/VistaPlan', [
+            'project' => $proyecto,
+        ]);
     }
 }
