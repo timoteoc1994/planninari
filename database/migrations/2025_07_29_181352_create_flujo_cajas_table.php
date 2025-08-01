@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             
             // Relaciones
-            $table->foreignId('proyecto_id')
-                  ->constrained('proyectos')
-                  ->cascadeOnDelete();
             $table->foreignId('user_id')
-                  ->constrained()
-                  ->cascadeOnDelete();
+              ->constrained()
+              ->onDelete('cascade');
+        $table->foreignId('proyecto_id')
+              ->constrained('projects')
+              ->onDelete('cascade');
             
             // Saldo inicial único
             $table->decimal('saldo_inicial', 12, 2)->default(0);

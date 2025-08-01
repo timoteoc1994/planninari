@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('flujo_cajas', function (Blueprint $table) {
-            $table->decimal('tna_inversion_alternativa', 5, 2)->nullable()->after('pagos_financiamiento');
+$table->decimal('tna_inversion_alternativa', 5, 2)->default(0)->after('pagos_financiamiento');
             $table->decimal('tir_anual', 8, 2)->nullable()->after('tna_inversion_alternativa');
             $table->decimal('van', 15, 2)->nullable()->after('tir_anual');
         });

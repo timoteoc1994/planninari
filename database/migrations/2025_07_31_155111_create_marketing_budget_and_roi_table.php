@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('presupuesto_marketing', function (Blueprint $table) {
             $table->id();
                         // Relaciones
-            $table->foreignId('proyecto_id')
-                  ->constrained('proyectos')
-                  ->cascadeOnDelete();
             $table->foreignId('user_id')
-                  ->constrained()
-                  ->cascadeOnDelete();
+              ->constrained()
+              ->onDelete('cascade');
+        $table->foreignId('proyecto_id')
+              ->constrained('projects')
+              ->onDelete('cascade');
             $table->json('medios')->nullable(); // Array de objetos {nombre, valores[]}
             $table->json('costos_trimestrales')->nullable();  // Array de costos trimestrales
             $table->json('ganancias_trimestrales')->nullable();  // Array de ganancias trimestrales

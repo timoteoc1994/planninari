@@ -13,8 +13,12 @@ return new class extends Migration
     {
         Schema::create('definicion_estrategicas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->foreignId('proyecto_id')->constrained('projects')->onDelete('cascade');
+            $table->foreignId('user_id')
+              ->constrained()
+              ->onDelete('cascade');
+        $table->foreignId('proyecto_id')
+              ->constrained('projects')
+              ->onDelete('cascade');
             $table->text('proposito_empresarial');
             $table->text('vision');
             $table->text('mision');
